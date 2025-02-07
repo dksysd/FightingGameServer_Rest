@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
-namespace FightingGameServer_Rest.Dtos;
+namespace FightingGameServer_Rest.Dtos.Auth;
 
 public class RefreshRequestDto
 {

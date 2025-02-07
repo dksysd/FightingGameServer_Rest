@@ -1,4 +1,5 @@
 ﻿using FightingGameServer_Rest.Models;
+using FightingGameServer_Rest.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace FightingGameServer_Rest.Data;

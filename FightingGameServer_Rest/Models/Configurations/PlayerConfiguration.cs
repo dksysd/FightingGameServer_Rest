@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FightingGameServer_Rest.Models;
+namespace FightingGameServer_Rest.Models.Configurations;
 
 public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {

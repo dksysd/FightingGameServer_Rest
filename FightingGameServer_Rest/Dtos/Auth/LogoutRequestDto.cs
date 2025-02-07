@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FightingGameServer_Rest.Dtos;
+namespace FightingGameServer_Rest.Dtos.Auth;
 
 public class LogoutRequestDto
 {

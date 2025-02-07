@@ -1,10 +1,10 @@
 ﻿using FightingGameServer_Rest.Data;
 using FightingGameServer_Rest.Models;
-using FightingGameServer_Rest.Repository.Interfaces;
+using FightingGameServer_Rest.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FightingGameServer_Rest.Repository;
+namespace FightingGameServer_Rest.Repositories;
 
 public class UserRepository(GameDbContext context) : IUserRepository
 {

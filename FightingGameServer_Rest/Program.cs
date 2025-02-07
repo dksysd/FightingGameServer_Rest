@@ -1,7 +1,7 @@
 using FightingGameServer_Rest.Authorization;
 using FightingGameServer_Rest.Data;
-using FightingGameServer_Rest.Repository;
-using FightingGameServer_Rest.Repository.Interfaces;
+using FightingGameServer_Rest.Repositories;
+using FightingGameServer_Rest.Repositories.Interfaces;
 using FightingGameServer_Rest.Services;
 using FightingGameServer_Rest.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;

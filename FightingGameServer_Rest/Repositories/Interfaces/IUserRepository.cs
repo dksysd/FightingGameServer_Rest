@@ -1,6 +1,6 @@
 ﻿using FightingGameServer_Rest.Models;
 
-namespace FightingGameServer_Rest.Repository.Interfaces;
+namespace FightingGameServer_Rest.Repositories.Interfaces;
 
 public interface IUserRepository
 {
