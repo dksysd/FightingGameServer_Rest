@@ -27,8 +27,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             return Conflict(new { message = operationException.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
         }
     }
