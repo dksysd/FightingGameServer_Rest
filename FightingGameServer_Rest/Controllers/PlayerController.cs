@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using FightingGameServer_Rest.Dtos.Player;
-using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

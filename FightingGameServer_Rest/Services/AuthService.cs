@@ -1,8 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using FightingGameServer_Rest.Dtos;
 using FightingGameServer_Rest.Dtos.Auth;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Repositories.Interfaces;
@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FightingGameServer_Rest.Services;
 
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 public class AuthService(
     IUserRepository userRepository,
     IConfiguration configuration,

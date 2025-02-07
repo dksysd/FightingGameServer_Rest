@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FightingGameServer_Rest.Models.Configurations;
 
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
     public void Configure(EntityTypeBuilder<Player> builder)

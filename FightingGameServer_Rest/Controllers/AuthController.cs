@@ -1,5 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos;
-using FightingGameServer_Rest.Dtos.Auth;
+﻿using FightingGameServer_Rest.Dtos.Auth;
 using FightingGameServer_Rest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
