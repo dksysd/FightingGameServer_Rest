@@ -161,11 +161,6 @@ public class AuthService(
         return array1.SequenceEqual(array2);
     }
 
-    private static string GenerateSessionToken(int tokenLength = 32)
-    {
-        return Guid.NewGuid().ToString();
-    }
-
     private string GenerateAccessToken(string userId)
     {
         JwtSecurityTokenHandler tokenHandler = new();
