@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "OytqVAFai6c6LtjAe/06cbIQN1c6V1ziRg+ky7BcBvY=",
+  "Source": "FightingGameServer_Rest",
+  "BasePath": "_content/FightingGameServer_Rest",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

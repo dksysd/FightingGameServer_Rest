@@ -1,0 +1,6 @@
+@FightingGameServer_Rest_HostAddress = http://localhost:5110
+
+GET {{FightingGameServer_Rest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
