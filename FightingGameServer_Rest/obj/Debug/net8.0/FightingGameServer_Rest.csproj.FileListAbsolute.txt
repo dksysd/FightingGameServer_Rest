@@ -47,3 +47,12 @@ C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\MySqlConnector.dll
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\obj\Debug\net8.0\FightingGameServer_Rest.sourcelink.json

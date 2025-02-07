@@ -37,8 +37,8 @@ builder.Services.AddControllers();
 // Add MemoryCache to the container.
 builder.Services.AddMemoryCache();
 
-builder.Services.AddAuthentication("SessionToken")
-    .AddScheme<AuthenticationSchemeOptions, SessionTokenAuthenticationHandler>("SessionToken", _ => { });
+builder.Services.AddAuthentication("JwtToken")
+    .AddScheme<AuthenticationSchemeOptions, JwtTokenAuthenticationHandler>("JwtToken", _ => { });
 
 // 인가 서비스 등록
 builder.Services.AddAuthorization(options =>
@@ -52,12 +52,13 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("SessionToken", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name = "session-token",
+        Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
-        Description = "Enter the session token"
+        Scheme = "Bearer",
+        Description = "Enter the access token"
     });
     
     // Security Requirement 추가 (모든 API에 적용)
@@ -66,7 +67,10 @@ builder.Services.AddSwaggerGen(options =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "SessionToken" }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
             },
             new List<string>()
         }

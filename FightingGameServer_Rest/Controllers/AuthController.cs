@@ -7,7 +7,7 @@ namespace FightingGameServer_Rest.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService, ILogger<AuthController> logger) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost("register")]
@@ -44,26 +44,27 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            string sessionToken = await authService.Login(loginRequestDto);
-            return Ok(new { sessionToken });
+            LoginResponseDto loginResponseDto = await authService.Login(loginRequestDto);
+            return Ok(loginResponseDto);
         }
         catch (InvalidOperationException operationException)
         {
             return Conflict(new { message = operationException.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
         }
     }
 
     [Authorize]
     [HttpPost("logout")]
-    public Task<IActionResult> Logout()
+    public Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
         try
         {
-            authService.Logout(Request.Headers["session-token"]!);
+            authService.Logout(logoutRequestDto);
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (InvalidOperationException operationException)
@@ -78,13 +79,13 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("heartbeat")]
-    public Task<IActionResult> Heartbeat()
+    [HttpPost("refresh")]
+    public Task<IActionResult> Refresh([FromBody] RefreshRequestDto refreshRequestDto)
     {
         try
         {
-            authService.Heartbeat(Request.Headers["session-token"]!);
-            return Task.FromResult<IActionResult>(Ok());
+            RefreshResponseDto refreshResponseDto = authService.Refresh(refreshRequestDto);
+            return Task.FromResult<IActionResult>(Ok(refreshResponseDto));
         }
         catch (InvalidOperationException operationException)
         {

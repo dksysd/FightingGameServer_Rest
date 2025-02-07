@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using FightingGameServer_Rest.Dtos;
 using FightingGameServer_Rest.Models;
@@ -6,6 +8,7 @@ using FightingGameServer_Rest.Repository.Interfaces;
 using FightingGameServer_Rest.Services.Interfaces;
 using Konscious.Security.Cryptography;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FightingGameServer_Rest.Services;
 
@@ -15,8 +18,15 @@ public class AuthService(
     IMemoryCache memoryCache,
     ILogger<AuthService> logger) : IAuthService
 {
-    private readonly TimeSpan _sessionTimeout =
-        TimeSpan.FromSeconds(configuration.GetValue<int>("SessionSettings:SessionExpirySeconds"));
+    private readonly byte[] _secretKeyBytes = Encoding.UTF8.GetBytes(
+        configuration.GetValue<string>("JwtSettings:SecretKey") ??
+        throw new InvalidOperationException("Jwt secret key is null"));
+
+    private readonly TimeSpan _accessTokenExpirationMinutes =
+        TimeSpan.FromMinutes(configuration.GetValue<int>("JwtSettings:AccessTokenExpirationMinutes"));
+
+    private readonly TimeSpan _refreshTokenExpirationMinutes =
+        TimeSpan.FromMinutes(configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationMinutes"));
 
     public async Task Register(RegisterRequestDto registerRequestDto)
     {
@@ -41,8 +51,8 @@ public class AuthService(
 
         await userRepository.Create(newUser);
     }
-    
-    public async Task<string> Login(LoginRequestDto loginRequestDto)
+
+    public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
     {
         User? user = await userRepository.GetByLoginId(loginRequestDto.LoginId);
         if (user is null)
@@ -55,36 +65,56 @@ public class AuthService(
             throw new InvalidOperationException("Invalid login password");
         }
 
-        string sessionToken = GenerateSessionToken();
+        string accessToken = GenerateAccessToken(user.Id.ToString());
+        string refreshToken = GenerateRefreshToken();
 
         MemoryCacheEntryOptions cacheEntryOptions = new();
-        cacheEntryOptions.SetSlidingExpiration(_sessionTimeout);
-        memoryCache.Set(sessionToken, user.Id, cacheEntryOptions);
-        
-        return sessionToken;
+        cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
+        memoryCache.Set(refreshToken, user.Id, cacheEntryOptions);
+
+        return new LoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+        };
     }
 
-    public void Logout(string sessionToken)
+    public void Logout(LogoutRequestDto logoutRequestDto)
     {
-        if (string.IsNullOrEmpty(sessionToken))
+        if (string.IsNullOrEmpty(logoutRequestDto.RefreshToken))
         {
-            throw new InvalidOperationException("Session token is empty");
+            throw new InvalidOperationException("Refresh token is empty");
         }
-        
-        memoryCache.Remove(sessionToken);
+
+        memoryCache.Remove(logoutRequestDto.RefreshToken);
     }
 
-    public void Heartbeat(string sessionToken)
+    public RefreshResponseDto Refresh(RefreshRequestDto refreshRequestDto)
     {
-        if (string.IsNullOrEmpty(sessionToken))
+        if (string.IsNullOrEmpty(refreshRequestDto.RefreshToken))
         {
-            throw new InvalidOperationException("Session token is empty");
+            throw new InvalidOperationException("Access token is empty");
         }
 
-        if (!memoryCache.TryGetValue(sessionToken, out int _))
+        if (!memoryCache.TryGetValue(refreshRequestDto.RefreshToken, out int userId))
         {
             throw new InvalidOperationException("Session token expired or invalid");
         }
+
+        memoryCache.Remove(refreshRequestDto.RefreshToken);
+
+        string refreshToken = GenerateRefreshToken();
+        MemoryCacheEntryOptions cacheEntryOptions = new();
+        cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
+        memoryCache.Set(refreshToken, userId, cacheEntryOptions);
+
+        string accessToken = GenerateAccessToken(userId.ToString());
+
+        return new RefreshResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 
     private static byte[] GenerateSalt(int saltSize = 64)
@@ -132,6 +162,25 @@ public class AuthService(
     }
 
     private static string GenerateSessionToken(int tokenLength = 32)
+    {
+        return Guid.NewGuid().ToString();
+    }
+
+    private string GenerateAccessToken(string userId)
+    {
+        JwtSecurityTokenHandler tokenHandler = new();
+        SecurityTokenDescriptor tokenDescription = new()
+        {
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)]),
+            Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),
+                SecurityAlgorithms.HmacSha256Signature)
+        };
+        SecurityToken? token = tokenHandler.CreateToken(tokenDescription);
+        return tokenHandler.WriteToken(token);
+    }
+
+    private static string GenerateRefreshToken()
     {
         return Guid.NewGuid().ToString();
     }
