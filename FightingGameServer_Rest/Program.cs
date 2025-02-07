@@ -58,9 +58,10 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
         Scheme = "Bearer",
-        Description = "Enter the access token"
+        Description =
+            "JWT Authorization header using the Bearer scheme. **Enter 'Bearer' [space] and then your token.** Example: \\\"Bearer 12345abcdef\\"
     });
-    
+
     // Security Requirement 추가 (모든 API에 적용)
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
