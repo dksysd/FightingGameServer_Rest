@@ -12,9 +12,11 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 
 // Add db context to the container.
 string? connectionString = builder.Configuration.GetConnectionString("DevConnection");

@@ -1,4 +1,5 @@
-﻿using FightingGameServer_Rest.Data;
+﻿using System.Diagnostics.CodeAnalysis;
+using FightingGameServer_Rest.Data;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FightingGameServer_Rest.Repositories;
 
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
+[SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
 public class UserRepository(GameDbContext context) : IUserRepository
 {
     public async Task<User?> GetById(int id)
@@ -37,11 +41,5 @@ public class UserRepository(GameDbContext context) : IUserRepository
         EntityEntry<User> deletedUser = context.Users.Remove(user);
         await context.SaveChangesAsync();
         return deletedUser.Entity;
-    }
-
-    public async Task<User> DeleteById(int id)
-    {
-        User? user = await GetById(id);
-        return await Delete(user ?? throw new InvalidOperationException("User not found"));
     }
 }

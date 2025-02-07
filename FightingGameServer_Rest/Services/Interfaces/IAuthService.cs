@@ -1,5 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos;
-using FightingGameServer_Rest.Dtos.Auth;
+﻿using FightingGameServer_Rest.Dtos.Auth;
 
 namespace FightingGameServer_Rest.Services.Interfaces;
 
