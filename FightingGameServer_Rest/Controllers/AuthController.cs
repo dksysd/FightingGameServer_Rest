@@ -71,8 +71,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             return Task.FromResult<IActionResult>(Conflict(new { message = operationException.Message }));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex.Message);
             return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status500InternalServerError,
                 new { message = "Internal Server Error" }));
         }
@@ -91,8 +92,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             return Task.FromResult<IActionResult>(Conflict(new { message = operationException.Message }));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex.Message);
             return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status500InternalServerError,
                 new { message = "Internal Server Error" }));
         }
