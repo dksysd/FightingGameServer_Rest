@@ -10,7 +10,10 @@ public class Player
     public required string Name { get; set; }
     public required int ExperiencePoint { get; set; }
     public required int MatchCount { get; set; }
-    
     public required int UserId { get; set; }
-    public User? User { get; set; }
+
+    public virtual User? User { get; set; }
+    public virtual IEnumerable<CustomCommand>? CustomCommands { get; set; }
+    public virtual IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
+    public virtual IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
 }

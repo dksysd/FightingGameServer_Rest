@@ -11,7 +11,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
     public void Configure(EntityTypeBuilder<Player> builder)
     {
         builder.ToTable("player");
-        builder.HasKey(x => x.Id);
+        builder.HasKey(player => player.Id);
 
         builder.Property(player => player.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
@@ -25,5 +25,14 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 
         builder.Property(player => player.UserId).HasColumnName("user_id").HasDefaultValue(-1).IsRequired();
         builder.HasOne(player => player.User).WithOne(user => user.Player);
+
+        builder.HasMany(player => player.CustomCommands).WithOne(command => command.Player)
+            .HasForeignKey(command => command.PlayerId).OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(player => player.WonMatchRecords).WithOne(matchRecord => matchRecord.WinnerPlayer)
+            .HasForeignKey(matchRecord => matchRecord.WinnerPlayerId).OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasMany(player => player.LostMatchRecords).WithOne(matchRecord => matchRecord.LoserPlayer)
+            .HasForeignKey(matchRecord => matchRecord.LoserPlayerId).OnDelete(DeleteBehavior.SetNull);
     }
 }

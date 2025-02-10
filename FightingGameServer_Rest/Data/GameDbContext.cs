@@ -13,6 +13,10 @@ public class GameDbContext(DbContextOptions options) : DbContext(options)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new PlayerConfiguration());
+        modelBuilder.ApplyConfiguration(new CharacterConfiguration());
+        modelBuilder.ApplyConfiguration(new SkillConfiguration());
+        modelBuilder.ApplyConfiguration(new CustomCommandConfiguration());
+        modelBuilder.ApplyConfiguration(new MatchRecordConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }
