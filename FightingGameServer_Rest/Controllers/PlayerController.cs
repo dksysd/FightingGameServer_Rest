@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using FightingGameServer_Rest.Dtos.Player;
-using FightingGameServer_Rest.Services.Interfaces;
+using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,7 @@ namespace FightingGameServer_Rest.Controllers;
 
 [ApiController]
 [Route("api/player")]
-public class PlayerController(IPlayerService playerService, ILogger<PlayerController> logger) : ControllerBase
+public class PlayerController(IPlayerInfoService playerInfoService, ILogger<PlayerController> logger) : ControllerBase
 {
     [Authorize]
     [HttpPost("create")]
@@ -25,7 +25,7 @@ public class PlayerController(IPlayerService playerService, ILogger<PlayerContro
             int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
 
             CreatePlayerResponseDto createPlayerResponseDto =
-                await playerService.CreatePlayer(createPlayerRequestDto, userId);
+                await playerInfoService.CreatePlayer(createPlayerRequestDto, userId);
             return Ok(createPlayerResponseDto);
         }
         catch (InvalidOperationException operationException)
@@ -45,7 +45,7 @@ public class PlayerController(IPlayerService playerService, ILogger<PlayerContro
     {
         try
         {
-            GetPlayerInfoResponseDto playerInfo = await playerService.GetPlayerInfo(getPlayerInfoRequestDto);
+            GetPlayerInfoResponseDto playerInfo = await playerInfoService.GetPlayerInfo(getPlayerInfoRequestDto);
             return Ok(playerInfo);
         }
         catch (Exception ex)

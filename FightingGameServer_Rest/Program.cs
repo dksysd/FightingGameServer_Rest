@@ -2,8 +2,10 @@ using FightingGameServer_Rest.Authorization;
 using FightingGameServer_Rest.Data;
 using FightingGameServer_Rest.Repositories;
 using FightingGameServer_Rest.Repositories.Interfaces;
-using FightingGameServer_Rest.Services;
-using FightingGameServer_Rest.Services.Interfaces;
+using FightingGameServer_Rest.Services.ApplicationServices;
+using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
+using FightingGameServer_Rest.Services.DataServices;
+using FightingGameServer_Rest.Services.DataServices.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -14,7 +16,8 @@ using Microsoft.OpenApi.Models;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // 설정 함수들을 호출하여 서비스, 리포지토리, DB Context, 인증, 인가, Swagger 설정 
-builder.ConfigureServices();
+builder.ConfigurationApplicationServices();
+builder.ConfigurationDataServices();
 builder.ConfigureRepositories();
 builder.ConfigureDbContext(builder.Configuration); // Configuration 객체를 넘겨줍니다. 
 builder.ConfigureAuthentication();
@@ -35,10 +38,16 @@ app.Run();
 internal static class ServiceCollectionExtensions
 {
     // 서비스 DI 설정 
-    public static void ConfigureServices(this WebApplicationBuilder builder)
+    public static void ConfigurationApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
+    }
+
+    public static void ConfigurationDataServices(this WebApplicationBuilder builder)
+    {
         builder.Services.AddScoped<IPlayerService, PlayerService>();
+        builder.Services.AddScoped<IUserService, UserService>();
     }
 
     // 리포지토리 DI 설정 
@@ -123,7 +132,7 @@ internal static class ServiceCollectionExtensions
     }
 }
 
-public static class ApplicationBuilderExtensions
+internal static class ApplicationBuilderExtensions
 {
     // HTTP Request Pipeline 설정 
     public static void ConfigureHttpRequestPipeline(this WebApplication app)

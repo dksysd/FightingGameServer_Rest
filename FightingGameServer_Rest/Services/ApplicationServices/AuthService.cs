@@ -5,17 +5,18 @@ using System.Security.Cryptography;
 using System.Text;
 using FightingGameServer_Rest.Dtos.Auth;
 using FightingGameServer_Rest.Models;
-using FightingGameServer_Rest.Repositories.Interfaces;
-using FightingGameServer_Rest.Services.Interfaces;
+using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
+using FightingGameServer_Rest.Services.DataServices.Interfaces;
 using Konscious.Security.Cryptography;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FightingGameServer_Rest.Services;
+namespace FightingGameServer_Rest.Services.ApplicationServices;
 
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 public class AuthService(
-    IUserRepository userRepository,
+    IUserService userService,
+    IPlayerService playerService,
     IConfiguration configuration,
     IMemoryCache memoryCache,
     ILogger<AuthService> logger) : IAuthService
@@ -30,39 +31,29 @@ public class AuthService(
     private readonly TimeSpan _refreshTokenExpirationMinutes =
         TimeSpan.FromMinutes(configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationMinutes"));
 
-    public async Task Register(RegisterRequestDto registerRequestDto)
+    public async Task Register(RegisterRequestDto request)
     {
-        User? existingUser = await userRepository.GetByLoginId(registerRequestDto.LoginId);
-        if (existingUser is not null)
-        {
-            throw new InvalidOperationException("User already exists");
-        }
-
         byte[] saltBytes = GenerateSalt();
         string salt = Convert.ToBase64String(saltBytes);
 
-        byte[] passwordHash = HashPassword(registerRequestDto.LoginPassword, saltBytes);
+        byte[] passwordHash = HashPassword(request.LoginPassword, saltBytes);
         string password = Convert.ToBase64String(passwordHash);
 
         User newUser = new()
         {
-            LoginId = registerRequestDto.LoginId,
+            LoginId = request.LoginId,
             LoginPassword = password,
             Salt = salt,
         };
 
-        await userRepository.Create(newUser);
+        await userService.CreateUser(newUser);
     }
 
-    public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
+    public async Task<LoginResponseDto> Login(LoginRequestDto request)
     {
-        User? user = await userRepository.GetByLoginId(loginRequestDto.LoginId);
-        if (user is null)
-        {
-            throw new InvalidOperationException("User does not exist");
-        }
+        User user = await userService.GetUserByLoginId(request.LoginId);
 
-        if (!VerifyPassword(loginRequestDto.LoginPassword, user.Salt, user.LoginPassword))
+        if (!VerifyPassword(request.LoginPassword, user.Salt, user.LoginPassword))
         {
             throw new InvalidOperationException("Invalid login password");
         }
@@ -81,29 +72,29 @@ public class AuthService(
         };
     }
 
-    public void Logout(LogoutRequestDto logoutRequestDto)
+    public void Logout(LogoutRequestDto request)
     {
-        if (string.IsNullOrEmpty(logoutRequestDto.RefreshToken))
+        if (string.IsNullOrEmpty(request.RefreshToken))
         {
             throw new InvalidOperationException("Refresh token is empty");
         }
 
-        memoryCache.Remove(logoutRequestDto.RefreshToken);
+        memoryCache.Remove(request.RefreshToken);
     }
 
-    public RefreshResponseDto Refresh(RefreshRequestDto refreshRequestDto)
+    public RefreshResponseDto Refresh(RefreshRequestDto request)
     {
-        if (string.IsNullOrEmpty(refreshRequestDto.RefreshToken))
+        if (string.IsNullOrEmpty(request.RefreshToken))
         {
             throw new InvalidOperationException("Access token is empty");
         }
 
-        if (!memoryCache.TryGetValue(refreshRequestDto.RefreshToken, out int userId))
+        if (!memoryCache.TryGetValue(request.RefreshToken, out int userId))
         {
             throw new InvalidOperationException("Session token expired or invalid");
         }
 
-        memoryCache.Remove(refreshRequestDto.RefreshToken);
+        memoryCache.Remove(request.RefreshToken);
 
         string refreshToken = GenerateRefreshToken();
         MemoryCacheEntryOptions cacheEntryOptions = new();

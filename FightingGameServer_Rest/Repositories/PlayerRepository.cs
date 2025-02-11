@@ -22,7 +22,7 @@ public class PlayerRepository(GameDbContext context) : IPlayerRepository
         return await context.Players.FirstOrDefaultAsync(player => player.Name == name);
     }
 
-    public async Task<IEnumerable<Player>> GetByUserId(int userId)
+    public async Task<List<Player>> GetByUserId(int userId)
     {
         return await context.Players.Where(player => player.UserId == userId).ToListAsync();
     }
