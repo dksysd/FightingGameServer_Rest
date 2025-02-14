@@ -44,19 +44,25 @@ namespace FightingGameServer_Rest
         {
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
+            builder.Services.AddScoped<IMatchRecordInfoService, MatchRecordInfoService>();
         }
 
         public static void ConfigurationDataServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IPlayerService, PlayerService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IMatchRecordService, MatchRecordService>();
         }
 
         // 리포지토리 DI 설정 
         public static void ConfigureRepositories(this WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+            builder.Services.AddScoped<ICustomCommandRepository, CustomCommandRepository>();
+            builder.Services.AddScoped<IMatchRecordRepository, MatchRecordRepository>();
             builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+            builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // DB Context 설정 

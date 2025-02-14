@@ -5,5 +5,5 @@ namespace FightingGameServer_Rest.Dtos.MatchRecord;
 public class GetMatchRecordInfoRequestDto
 {
     [Required]
-    public required int PlayerId { get; set; }
+    public required string PlayerName { get; set; }
 }
