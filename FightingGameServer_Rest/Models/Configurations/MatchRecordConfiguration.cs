@@ -14,9 +14,11 @@ public class MatchRecordConfiguration : IEntityTypeConfiguration<MatchRecord>
 
         builder.Property(matchRecord => matchRecord.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
-        builder.Property(matchRecord => matchRecord.StartedAt).HasColumnName("started_at").HasColumnType("timestamp").IsRequired();
+        builder.Property(matchRecord => matchRecord.StartedAt).HasColumnName("started_at").HasColumnType("timestamp")
+            .IsRequired();
 
-        builder.Property(matchRecord => matchRecord.EndedAt).HasColumnName("ended_at").HasColumnType("timestamp").IsRequired();
+        builder.Property(matchRecord => matchRecord.EndedAt).HasColumnName("ended_at").HasColumnType("timestamp")
+            .IsRequired();
 
         builder.Property(matchRecord => matchRecord.WinnerPlayerId).HasColumnName("winner_player_id").IsRequired(false);
 
@@ -30,10 +32,15 @@ public class MatchRecordConfiguration : IEntityTypeConfiguration<MatchRecord>
 
         builder.HasOne(matchRecord => matchRecord.WinnerPlayer).WithMany(player => player.WonMatchRecords);
 
-        builder.HasOne(matchRecord => matchRecord.WinnerPlayerCharacter).WithMany(character => character.WonMatchRecords);
+        builder.HasOne(matchRecord => matchRecord.WinnerPlayerCharacter)
+            .WithMany(character => character.WonMatchRecords);
 
         builder.HasOne(matchRecord => matchRecord.LoserPlayer).WithMany(player => player.LostMatchRecords);
 
-        builder.HasOne(matchRecord => matchRecord.LoserPlayerCharacter).WithMany(character => character.LostMatchRecords);
+        builder.HasOne(matchRecord => matchRecord.LoserPlayerCharacter)
+            .WithMany(character => character.LostMatchRecords);
+
+        builder.ToTable(table =>
+            table.HasCheckConstraint("CK_MatchRecord_EndedAtGreaterThanStartedAt", "ended_at > started_at"));
     }
 }

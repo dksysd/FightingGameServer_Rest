@@ -2,10 +2,8 @@
 
 namespace FightingGameServer_Rest.Repositories.Interfaces;
 
-public interface ISkillRepository
+public interface ISkillRepository : IRepository<Skill>
 {
-    Task<IEnumerable<Skill?>> GetAll();
-    Task<Skill?> GetById(int id);
     Task<Skill?> GetByName(string name);
     Task<IEnumerable<Skill?>> GetByCharacterId(int characterId);
 }

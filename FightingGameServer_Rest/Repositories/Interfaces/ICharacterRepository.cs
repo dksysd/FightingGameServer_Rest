@@ -2,9 +2,7 @@
 
 namespace FightingGameServer_Rest.Repositories.Interfaces;
 
-public interface ICharacterRepository
+public interface ICharacterRepository : IRepository<Character>
 {
-    Task<IEnumerable<Character?>> GetAll();
-    Task<Character?> GetById(int id);
     Task<Character?> GetByName(string name);
 }

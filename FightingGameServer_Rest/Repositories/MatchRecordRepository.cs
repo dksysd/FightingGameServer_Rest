@@ -3,34 +3,69 @@ using FightingGameServer_Rest.Data;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FightingGameServer_Rest.Repositories;
 
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 [SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
-public class MatchRecordRepository(GameDbContext context) : IMatchRecordRepository
+public class MatchRecordRepository(GameDbContext context) : Repository<MatchRecord>(context), IMatchRecordRepository
 {
-    public async Task<IEnumerable<MatchRecord?>> GetAll()
+    public Task<List<MatchRecord>> GetByUserId(int userId,
+        Func<IQueryable<MatchRecord>, IQueryable<MatchRecord>>? includeFunc = null)
     {
-        return await context.MatchRecords.ToListAsync();
+        IQueryable<MatchRecord> query = Context.MatchRecords.Where(matchRecord =>
+            matchRecord.WinnerPlayerId == userId || matchRecord.LoserPlayerId == userId);
+        if (includeFunc != null)
+        {
+            query = includeFunc(query);
+        }
+
+        return query.ToListAsync();
     }
 
-    public async Task<MatchRecord?> GetById(int id)
+    public Task<List<MatchRecord>> GetByTime(DateTime begin, DateTime end,
+        Func<IQueryable<MatchRecord>, IQueryable<MatchRecord>>? includeFunc = null)
     {
-        return await context.MatchRecords.FindAsync(id);
+        IQueryable<MatchRecord> query = Context.MatchRecords
+            .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end);
+        if (includeFunc != null)
+        {
+            query = includeFunc(query);
+        }
+
+        return query.ToListAsync();
     }
 
-    public async Task<IEnumerable<MatchRecord?>> GetByUserId(int userId)
+    public Task<List<MatchRecord>> GetByTime(DateTime begin, DateTime end, int userId,
+        Func<IQueryable<MatchRecord>, IQueryable<MatchRecord>>? includeFunc = null)
     {
-        return await context.MatchRecords
-            .Where(matchRecord => matchRecord.WinnerPlayerId == userId || matchRecord.LoserPlayerId == userId)
-            .ToListAsync();
+        IQueryable<MatchRecord> query = Context.MatchRecords
+            .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end).Where(matchRecord =>
+                matchRecord.WinnerPlayerId == userId || matchRecord.LoserPlayerId == userId);
+        if (includeFunc != null)
+        {
+            query = includeFunc(query);
+        }
+
+        return query.ToListAsync();
     }
 
-    public async Task<IEnumerable<MatchRecord?>> GetByTime(DateTime begin, DateTime end)
+    public Task<List<MatchRecord>> GetByTime(DateTime begin, DateTime end, int userId1, int userId2,
+        Func<IQueryable<MatchRecord>, IQueryable<MatchRecord>>? includeFunc = null)
     {
-        return await context.MatchRecords
-            .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end).ToListAsync();
+        IQueryable<MatchRecord> query = Context.MatchRecords
+            .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end).Where(matchRecord =>
+                matchRecord.WinnerPlayerId == userId1 ||
+                matchRecord.WinnerPlayerId == userId2 ||
+                matchRecord.LoserPlayerId == userId1 ||
+                matchRecord.LoserPlayerId == userId2);
+        if (includeFunc != null)
+        {
+            query = includeFunc(query);
+        }
+
+        return query.ToListAsync();
     }
 }

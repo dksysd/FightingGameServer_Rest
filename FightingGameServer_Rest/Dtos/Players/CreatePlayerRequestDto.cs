@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FightingGameServer_Rest.Dtos.Player;
+namespace FightingGameServer_Rest.Dtos.Players;
 
 public class CreatePlayerRequestDto
 {

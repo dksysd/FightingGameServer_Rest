@@ -1,9 +1,9 @@
-﻿using FightingGameServer_Rest.Dtos.Player;
+﻿using FightingGameServer_Rest.Dtos.Players;
 
 namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 
 public interface IPlayerInfoService
 {
-    Task<CreatePlayerResponseDto> CreatePlayer(CreatePlayerRequestDto request, int userId);
-    Task<GetPlayerInfoResponseDto> GetPlayerInfo(GetPlayerInfoRequestDto request);
+    Task<PlayerDto> CreatePlayer(CreatePlayerRequestDto request, int userId);
+    Task<PlayerDto> GetPlayerInfo(GetPlayerInfoRequestDto request);
 }

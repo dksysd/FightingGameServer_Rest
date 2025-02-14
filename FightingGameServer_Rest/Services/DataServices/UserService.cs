@@ -8,31 +8,31 @@ public class UserService(IUserRepository userRepository) : IUserService
 {
     public async Task<User> CreateUser(User user)
     {
-        User? existUser = await userRepository.GetByLoginId(user.LoginId);
+        User? existUser = await userRepository.GetByLoginIdAsync(user.LoginId);
         if (existUser != null) throw new InvalidOperationException("Login id is already used.");
-        return await userRepository.Create(user);
+        return await userRepository.CreateAsync(user) ?? throw new InvalidOperationException("Create user failed.");
     }
 
     public async Task<User> GetUserById(int userId)
     {
-        return await userRepository.GetById(userId) ?? throw new InvalidOperationException("User not found.");
+        return await userRepository.GetByIdAsync(userId) ?? throw new InvalidOperationException("User not found.");
     }
 
     public async Task<User> GetUserByLoginId(string loginId)
     {
-        return await userRepository.GetByLoginId(loginId) ?? throw new InvalidOperationException("User not found.");
+        return await userRepository.GetByLoginIdAsync(loginId) ??
+               throw new InvalidOperationException("User not found.");
     }
-
 
     public async Task<User> UpdateUser(User user)
     {
         await GetUserByLoginId(user.LoginId);
-        return await userRepository.Update(user);
+        return await userRepository.UpdateAsync(user);
     }
 
     public async Task<User> DeleteUser(User user)
     {
         await GetUserByLoginId(user.LoginId);
-        return await userRepository.Delete(user);
+        return await userRepository.DeleteAsync(user);
     }
 }

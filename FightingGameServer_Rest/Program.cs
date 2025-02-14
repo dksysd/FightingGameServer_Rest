@@ -1,3 +1,4 @@
+using FightingGameServer_Rest;
 using FightingGameServer_Rest.Authorization;
 using FightingGameServer_Rest.Data;
 using FightingGameServer_Rest.Repositories;
@@ -33,119 +34,121 @@ app.ConfigureHttpRequestPipeline();
 
 app.Run();
 
-
-// --- 확장 메서드 정의 ---
-internal static class ServiceCollectionExtensions
+namespace FightingGameServer_Rest
 {
-    // 서비스 DI 설정 
-    public static void ConfigurationApplicationServices(this WebApplicationBuilder builder)
+    // --- 확장 메서드 정의 ---
+    internal static class ServiceCollectionExtensions
     {
-        builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
-    }
-
-    public static void ConfigurationDataServices(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped<IPlayerService, PlayerService>();
-        builder.Services.AddScoped<IUserService, UserService>();
-    }
-
-    // 리포지토리 DI 설정 
-    public static void ConfigureRepositories(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
-    }
-
-    // DB Context 설정 
-    public static void ConfigureDbContext(this WebApplicationBuilder builder, IConfiguration configuration)
-    {
-        string? connectionString = configuration.GetConnectionString("DevConnection");
-        builder.Services.AddDbContext<GameDbContext>(options =>
+        // 서비스 DI 설정 
+        public static void ConfigurationApplicationServices(this WebApplicationBuilder builder)
         {
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString ??
-                                                                        throw new InvalidOperationException(
-                                                                            "Connection string is missing")));
-
-            // 개발 환경 설정 
-            if (builder.Environment.IsDevelopment())
-            {
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
-                options.UseLoggerFactory(LoggerFactory.Create(loggingBuilder => loggingBuilder.AddConsole()));
-            }
-
-            // **운영 환경 설정 주의 사항** 주석은 그대로 유지 
-        });
-    }
-
-    // 인증 설정
-    public static void ConfigureAuthentication(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddAuthentication("JwtToken")
-            .AddScheme<AuthenticationSchemeOptions, JwtTokenAuthenticationHandler>("JwtToken", _ => { });
-    }
-
-    // 인가 설정 
-    public static void ConfigureAuthorization(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddAuthorization(options => { options.FallbackPolicy = options.DefaultPolicy; });
-    }
-
-    // Swagger 설정 
-    public static void ConfigureSwagger(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-                In = ParameterLocation.Header,
-                Scheme = "Bearer",
-                Description =
-                    "JWT Authorization header using the Bearer scheme. **Enter 'Bearer' [space] and then your token.** Example: \\\"Bearer 12345abcdef\\\""
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header,
-                    },
-                    new List<string>()
-                }
-            });
-        });
-    }
-
-    // 컨트롤러 및 캐시 설정
-    public static void ConfigureControllersAndCache(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddControllers();
-        builder.Services.AddMemoryCache();
-    }
-}
-
-internal static class ApplicationBuilderExtensions
-{
-    // HTTP Request Pipeline 설정 
-    public static void ConfigureHttpRequestPipeline(this WebApplication app)
-    {
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
         }
 
-        app.UseHttpsRedirection();
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.MapControllers();
+        public static void ConfigurationDataServices(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IPlayerService, PlayerService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+        }
+
+        // 리포지토리 DI 설정 
+        public static void ConfigureRepositories(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+        }
+
+        // DB Context 설정 
+        public static void ConfigureDbContext(this WebApplicationBuilder builder, IConfiguration configuration)
+        {
+            string? connectionString = configuration.GetConnectionString("DevConnection");
+            builder.Services.AddDbContext<GameDbContext>(options =>
+            {
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString ??
+                                                                            throw new InvalidOperationException(
+                                                                                "Connection string is missing")));
+
+                // 개발 환경 설정 
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.EnableDetailedErrors();
+                    options.EnableSensitiveDataLogging();
+                    options.UseLoggerFactory(LoggerFactory.Create(loggingBuilder => loggingBuilder.AddConsole()));
+                }
+
+                // **운영 환경 설정 주의 사항** 주석은 그대로 유지 
+            });
+        }
+
+        // 인증 설정
+        public static void ConfigureAuthentication(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddAuthentication("JwtToken")
+                .AddScheme<AuthenticationSchemeOptions, JwtTokenAuthenticationHandler>("JwtToken", _ => { });
+        }
+
+        // 인가 설정 
+        public static void ConfigureAuthorization(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddAuthorization(options => { options.FallbackPolicy = options.DefaultPolicy; });
+        }
+
+        // Swagger 설정 
+        public static void ConfigureSwagger(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Scheme = "Bearer",
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. **Enter 'Bearer' [space] and then your token.** Example: \\\"Bearer 12345abcdef\\\""
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+        }
+
+        // 컨트롤러 및 캐시 설정
+        public static void ConfigureControllersAndCache(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddControllers();
+            builder.Services.AddMemoryCache();
+        }
+    }
+
+    internal static class ApplicationBuilderExtensions
+    {
+        // HTTP Request Pipeline 설정 
+        public static void ConfigureHttpRequestPipeline(this WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapControllers();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos.Player;
+﻿using FightingGameServer_Rest.Dtos.Players;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
@@ -15,7 +15,7 @@ public class PlayerInfoService(IPlayerService playerService) : IPlayerInfoServic
         UserId = -1
     };
 
-    public async Task<CreatePlayerResponseDto> CreatePlayer(CreatePlayerRequestDto request, int userId)
+    public async Task<PlayerDto> CreatePlayer(CreatePlayerRequestDto request, int userId)
     {
         Player player = await playerService.CreatePlayer(new Player
         {
@@ -24,15 +24,10 @@ public class PlayerInfoService(IPlayerService playerService) : IPlayerInfoServic
             MatchCount = 0,
             UserId = userId
         });
-        return new CreatePlayerResponseDto
-        {
-            Name = player.Name,
-            ExperiencePoint = player.ExperiencePoint,
-            MatchCount = player.MatchCount
-        };
+        return player.ToDto();
     }
 
-    public async Task<GetPlayerInfoResponseDto> GetPlayerInfo(GetPlayerInfoRequestDto request)
+    public async Task<PlayerDto> GetPlayerInfo(GetPlayerInfoRequestDto request)
     {
         Player player;
         try
@@ -41,14 +36,10 @@ public class PlayerInfoService(IPlayerService playerService) : IPlayerInfoServic
         }
         catch (InvalidOperationException invalidOperationException)
         {
+            Console.WriteLine(invalidOperationException.StackTrace);
             player = _deletedPlayer;
         }
-        
-        return new GetPlayerInfoResponseDto
-        {
-            Name = player.Name,
-            ExperiencePoint = player.ExperiencePoint,
-            MatchCount = player.MatchCount
-        };
+
+        return player.ToDto();
     }
 }
