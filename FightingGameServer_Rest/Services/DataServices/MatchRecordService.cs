@@ -31,7 +31,7 @@ public class MatchRecordService(IMatchRecordRepository matchRecordRepository) : 
     public async Task<List<MatchRecord>> GetAllMatchRecordsByPlayerId(int userId)
     {
         List<MatchRecord> matchRecords = await matchRecordRepository.GetByUserId(userId,
-            matchRecord => matchRecord.Include(record => record.WinnerPlayer).Include(record => record.LoserPlayer)
+            query => query.Include(record => record.WinnerPlayer).Include(record => record.LoserPlayer)
                 .Include(record => record.WinnerPlayerCharacter).Include(record => record.LoserPlayerCharacter));
         if (matchRecords.Count == 0) throw new InvalidOperationException("No match records found.");
         return matchRecords;

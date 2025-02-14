@@ -12,8 +12,8 @@ public class GetMatchRecordInfoResponseDto
         public required DateTime StartedAt { get; set; }
         public required DateTime EndedAt { get; set; }
         public required PlayerDto WinnerPlayerDto { get; set; }
-        public required GetCharacterInfoResponseDto WinnerPlayerCharacterInfo { get; set; }
+        public required CharacterDto WinnerPlayerCharacter { get; set; }
         public required PlayerDto LoserPlayerCharacterDto { get; set; }
-        public required GetCharacterInfoResponseDto LoserPlayerCharacterInfo { get; set; }
+        public required CharacterDto LoserPlayerCharacter { get; set; }
     }
 }
