@@ -26,13 +26,11 @@ public class UserService(IUserRepository userRepository) : IUserService
 
     public async Task<User> UpdateUser(User user)
     {
-        await GetUserByLoginId(user.LoginId);
-        return await userRepository.UpdateAsync(user);
+        return await userRepository.UpdateAsync(user.Id, user);
     }
 
     public async Task<User> DeleteUser(User user)
     {
-        await GetUserByLoginId(user.LoginId);
-        return await userRepository.DeleteAsync(user);
+        return await userRepository.DeleteAsync(user.Id, user);
     }
 }

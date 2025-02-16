@@ -1,4 +1,5 @@
-﻿using FightingGameServer_Rest.Dtos.Skills;
+﻿using FightingGameServer_Rest.Dtos.Exception;
+using FightingGameServer_Rest.Dtos.Skills;
 
 namespace FightingGameServer_Rest.Dtos.Character;
 
@@ -6,7 +7,7 @@ public static class CharacterDtoExtension
 {
     public static CharacterDto ToDto(this Models.Character character)
     {
-        if (character.Skills is null) throw new InvalidOperationException("Skills cannot be null.");
+        if (character.Skills is null) throw new ConvertDtoException("Skills cannot be null.");
         
         return new CharacterDto
         {

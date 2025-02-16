@@ -7,6 +7,7 @@ using FightingGameServer_Rest.Services.ApplicationServices;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
+using FightingGameServer_Rest.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -44,6 +45,7 @@ namespace FightingGameServer_Rest
         {
             builder.Services.AddScoped<ICharacterInfoService, CharacterInfoService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICustomCommandManageService, CustomCommandManageService>();
             builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
             builder.Services.AddScoped<IMatchRecordInfoService, MatchRecordInfoService>();
         }
@@ -51,8 +53,10 @@ namespace FightingGameServer_Rest
         public static void ConfigurationDataServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<ICharacterService, CharacterService>();
+            builder.Services.AddScoped<ICustomCommandService, CustomCommandService>();
             builder.Services.AddScoped<IMatchRecordService, MatchRecordService>();
             builder.Services.AddScoped<IPlayerService, PlayerService>();
+            builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IUserService, UserService>();
         }
 
@@ -131,6 +135,8 @@ namespace FightingGameServer_Rest
                         new List<string>()
                     }
                 });
+                
+                options.SchemaFilter<EnumSchemaFilter>();
             });
         }
 

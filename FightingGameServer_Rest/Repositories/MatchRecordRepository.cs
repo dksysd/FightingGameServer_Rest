@@ -17,7 +17,7 @@ public class MatchRecordRepository(GameDbContext context) : Repository<MatchReco
     {
         IQueryable<MatchRecord> query = Context.MatchRecords.Where(matchRecord =>
             matchRecord.WinnerPlayerId == userId || matchRecord.LoserPlayerId == userId);
-        if (includeFunc != null)
+        if (includeFunc is not null)
         {
             query = includeFunc(query);
         }
@@ -30,7 +30,7 @@ public class MatchRecordRepository(GameDbContext context) : Repository<MatchReco
     {
         IQueryable<MatchRecord> query = Context.MatchRecords
             .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end);
-        if (includeFunc != null)
+        if (includeFunc is not null)
         {
             query = includeFunc(query);
         }
@@ -44,7 +44,7 @@ public class MatchRecordRepository(GameDbContext context) : Repository<MatchReco
         IQueryable<MatchRecord> query = Context.MatchRecords
             .Where(matchRecord => matchRecord.StartedAt >= begin && matchRecord.EndedAt <= end).Where(matchRecord =>
                 matchRecord.WinnerPlayerId == userId || matchRecord.LoserPlayerId == userId);
-        if (includeFunc != null)
+        if (includeFunc is not null)
         {
             query = includeFunc(query);
         }
@@ -61,7 +61,7 @@ public class MatchRecordRepository(GameDbContext context) : Repository<MatchReco
                 matchRecord.WinnerPlayerId == userId2 ||
                 matchRecord.LoserPlayerId == userId1 ||
                 matchRecord.LoserPlayerId == userId2);
-        if (includeFunc != null)
+        if (includeFunc is not null)
         {
             query = includeFunc(query);
         }

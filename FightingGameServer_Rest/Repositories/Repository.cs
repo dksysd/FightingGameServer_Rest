@@ -61,17 +61,27 @@ public class Repository<T>(GameDbContext context) : IRepository<T>
         return await query.ToListAsync();
     }
 
-    public virtual async Task<T> UpdateAsync(T entity)
+    public virtual async Task<T> UpdateAsync(int id, T entity)
     {
-        EntityEntry<T> updatedEntity = Context.Set<T>().Update(entity);
+        T? existingEntity = await Context.Set<T>().FindAsync(id);
+        if (existingEntity == null)
+        {
+            throw new InvalidOperationException("Can't find entity");
+        }
+        Context.Entry(existingEntity).CurrentValues.SetValues(entity);
         await Context.SaveChangesAsync();
-        return updatedEntity.Entity;
+        return existingEntity;
     }
 
-    public virtual async Task<T> DeleteAsync(T entity)
+    public virtual async Task<T> DeleteAsync(int id, T entity)
     {
-        EntityEntry<T> deletedEntity = Context.Set<T>().Remove(entity);
+        T? existingEntity = await Context.Set<T>().FindAsync(id);
+        if (existingEntity == null)
+        {
+            throw new InvalidOperationException("Can't find entity");
+        }
+        Context.Set<T>().Remove(existingEntity);
         await Context.SaveChangesAsync();
-        return deletedEntity.Entity;
+        return existingEntity;
     }
 }

@@ -12,8 +12,14 @@ namespace FightingGameServer_Rest.Repositories;
 public class CustomCommandRepository(GameDbContext context)
     : Repository<CustomCommand>(context), ICustomCommandRepository
 {
-    public async Task<IEnumerable<CustomCommand?>> GetByPlayerId(int playerId)
+    public async Task<IEnumerable<CustomCommand>> GetByPlayerId(int playerId,
+        Func<IQueryable<CustomCommand>, IQueryable<CustomCommand>>? includeFunc = null)
     {
-        return await Context.CustomCommands.Where(customCommand => customCommand.PlayerId == playerId).ToListAsync();
+        IQueryable<CustomCommand> query = Context.CustomCommands.Where(customCommand => customCommand.PlayerId == playerId);
+        if (includeFunc is not null)
+        {
+            query = includeFunc(query);
+        }
+        return await query.ToListAsync();
     }
 }

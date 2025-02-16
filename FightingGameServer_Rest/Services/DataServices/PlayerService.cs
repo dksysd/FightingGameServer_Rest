@@ -35,6 +35,6 @@ public class PlayerService(IPlayerRepository playerRepository) : IPlayerService
     public async Task<Player> UpdatePlayer(Player player)
     {
         await GetPlayerById(player.Id);
-        return await playerRepository.UpdateAsync(player);
+        return await playerRepository.UpdateAsync(player.Id, player);
     }
 }

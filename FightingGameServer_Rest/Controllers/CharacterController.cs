@@ -11,7 +11,7 @@ public class CharacterController(ICharacterInfoService characterService, ILogger
     : ControllerBase
 {
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllCharacters()
     {
         try
