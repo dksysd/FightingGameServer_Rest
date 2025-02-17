@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +15,10 @@ public class CustomCommandConfiguration : IEntityTypeConfiguration<CustomCommand
 
         builder.Property(customCommand => customCommand.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
-        builder.Property(customCommand => customCommand.Command).HasColumnName("command").HasMaxLength(20).IsRequired();
+        builder.Property(customCommand => customCommand.Command).HasColumnName("command").HasColumnType("json")
+            .HasConversion(commands => JsonSerializer.Serialize(commands, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<List<string>>(json, JsonSerializerOptions.Default) ??
+                        new List<string>()).IsRequired();
 
         builder.Property(customCommand => customCommand.PlayerId).HasColumnName("player_id").IsRequired();
 

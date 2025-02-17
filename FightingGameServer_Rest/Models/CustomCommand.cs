@@ -3,7 +3,7 @@
 public class CustomCommand
 {
     public int Id { get; set; }
-    public required string Command { get; set; }
+    public required List<string> Command { get; set; }
     public required int PlayerId { get; set; }
     public required int CharacterId { get; set; }
     public required int SkillId { get; set; }

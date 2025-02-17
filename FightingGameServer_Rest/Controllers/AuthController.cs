@@ -80,7 +80,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         }
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("refresh")]
     public Task<IActionResult> Refresh([FromBody] RefreshRequestDto refreshRequestDto)
     {

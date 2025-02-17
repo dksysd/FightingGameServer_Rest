@@ -35,15 +35,24 @@ public class JwtTokenAuthenticationHandler(
         accessToken = accessToken["Bearer ".Length..];
 
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
-        jwtSecurityTokenHandler.ValidateToken(accessToken, new TokenValidationParameters
+        SecurityToken validatedToken;
+        try
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(_secretKeyBytes),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        }, out SecurityToken validatedToken);
+            jwtSecurityTokenHandler.ValidateToken(accessToken, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(_secretKeyBytes),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            }, out validatedToken);
+        }
+        catch (SecurityTokenExpiredException expiredException)
+        {
+            return Task.FromResult(AuthenticateResult.Fail(expiredException.Message));
+        }
+        
 
         JwtSecurityToken jwtSecurityToken = (JwtSecurityToken)validatedToken;
         string userId =

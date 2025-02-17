@@ -9,7 +9,7 @@ public class GameDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<User> Users { get; set; }
     public DbSet<Player> Players { get; set; }
     public DbSet<Character> Characters { get; set; }
-    public DbSet<Skill?> Skills { get; set; }
+    public DbSet<Skill> Skills { get; set; }
     public DbSet<CustomCommand> CustomCommands { get; set; }
     public DbSet<MatchRecord> MatchRecords { get; set; }
 
@@ -22,5 +22,11 @@ public class GameDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.ApplyConfiguration(new CustomCommandConfiguration());
         modelBuilder.ApplyConfiguration(new MatchRecordConfiguration());
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<List<string>>().HaveConversion<ListStringConverter, ListStringComparer>();
+        base.ConfigureConventions(configurationBuilder);
     }
 }

@@ -14,7 +14,7 @@ public class Skill
     public required float IntelligenceCoefficient { get; set; }
     public required float MoveSpeedCoefficient { get; set; }
     public required float AttackSpeedCoefficient { get; set; }
-    public required string DefaultCommand { get; set; }
+    public required List<string> DefaultCommand { get; set; }
     public required int CharacterId { get; set; }
     
     public virtual Character? Character { get; set; }

@@ -13,5 +13,5 @@ public class SkillDto
     public required float IntelligenceCoefficient { get; set; }
     public required float MoveSpeedCoefficient { get; set; }
     public required float AttackSpeedCoefficient { get; set; }
-    public required string DefaultCommand { get; set; }
+    public required List<string> DefaultCommand { get; set; }
 }

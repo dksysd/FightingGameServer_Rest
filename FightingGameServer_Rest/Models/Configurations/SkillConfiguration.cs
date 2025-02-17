@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -44,9 +45,10 @@ public class SkillConfiguration : IEntityTypeConfiguration<Skill>
         builder.Property(skill => skill.AttackSpeedCoefficient).HasColumnName("attack_speed_coefficient")
             .HasDefaultValue(0).IsRequired();
 
-        builder.Property(skill => skill.DefaultCommand).HasColumnName("default_command").HasMaxLength(20).IsRequired();
-
-        builder.HasIndex(skill => new { skill.DefaultCommand, skill.CharacterId }).IsUnique();
+        builder.Property(skill => skill.DefaultCommand).HasColumnName("default_command").HasColumnType("json")
+            .HasConversion(commands => JsonSerializer.Serialize(commands, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<List<string>>(json, JsonSerializerOptions.Default) ??
+                        new List<string>()).IsRequired();
 
         builder.Property(skill => skill.CharacterId).HasColumnName("character_id").IsRequired();
         builder.HasOne(skill => skill.Character).WithMany(character => character.Skills);
