@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using FightingGameServer_Rest.Dtos.Auth;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,8 @@ namespace FightingGameServer_Rest.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[SuppressMessage("Usage", "CA2254:템플릿은 정적 표현식이어야 합니다.")]
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 public class AuthController(IAuthService authService, ILogger<AuthController> logger) : ControllerBase
 {
     [AllowAnonymous]

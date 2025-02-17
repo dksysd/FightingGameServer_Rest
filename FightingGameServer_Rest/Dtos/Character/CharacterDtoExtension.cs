@@ -18,7 +18,7 @@ public static class CharacterDtoExtension
             Intelligence = character.Intelligence,
             MoveSpeed = character.MoveSpeed,
             AttackSpeed = character.AttackSpeed,
-            Skills = character.Skills.Select(skill => skill.ToDto()),
+            Skills = character.Skills.Select(skill => skill.ToDto())
         };
     }
 }

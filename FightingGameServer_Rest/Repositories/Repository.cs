@@ -73,7 +73,7 @@ public class Repository<T>(GameDbContext context) : IRepository<T>
         return existingEntity;
     }
 
-    public virtual async Task<T> DeleteAsync(int id, T entity)
+    public virtual async Task<T> DeleteAsync(int id)
     {
         T? existingEntity = await Context.Set<T>().FindAsync(id);
         if (existingEntity == null)

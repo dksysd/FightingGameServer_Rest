@@ -180,7 +180,7 @@ public class AuthService(
         {
             Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.Role, role)
             ]),
             Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),

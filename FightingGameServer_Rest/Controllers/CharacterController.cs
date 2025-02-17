@@ -1,4 +1,5 @@
-﻿using FightingGameServer_Rest.Dtos.Character;
+﻿using System.Diagnostics.CodeAnalysis;
+using FightingGameServer_Rest.Dtos.Character;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace FightingGameServer_Rest.Controllers;
 
 [ApiController]
 [Route("api/character")]
+[SuppressMessage("Usage", "CA2254:템플릿은 정적 표현식이어야 합니다.")]
 public class CharacterController(ICharacterInfoService characterService, ILogger<CharacterController> logger)
     : ControllerBase
 {

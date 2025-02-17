@@ -1,6 +1,6 @@
 ﻿namespace FightingGameServer_Rest.Models;
 
-public class CustomCommand
+public sealed class CustomCommand
 {
     public int Id { get; set; }
     public required List<string> Command { get; set; }
@@ -8,7 +8,7 @@ public class CustomCommand
     public required int CharacterId { get; set; }
     public required int SkillId { get; set; }
 
-    public virtual Player? Player { get; set; }
-    public virtual Character? Character { get; set; }
-    public virtual Skill? Skill { get; set; }
+    public Player? Player { get; set; }
+    public Character? Character { get; set; }
+    public Skill? Skill { get; set; }
 }

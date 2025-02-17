@@ -1,6 +1,6 @@
 ﻿namespace FightingGameServer_Rest.Models;
 
-public class Character
+public sealed class Character
 {
     public int Id { get; set; }
     public required string Name { get; set; }
@@ -11,8 +11,8 @@ public class Character
     public required float MoveSpeed { get; set; }
     public required float AttackSpeed { get; set; }
     
-    public virtual IEnumerable<Skill>? Skills { get; set; }
-    public virtual IEnumerable<CustomCommand>? CustomCommands { get; set; }
-    public virtual IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
-    public virtual IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
+    public IEnumerable<Skill>? Skills { get; set; }
+    public IEnumerable<CustomCommand>? CustomCommands { get; set; }
+    public IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
+    public IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
 }

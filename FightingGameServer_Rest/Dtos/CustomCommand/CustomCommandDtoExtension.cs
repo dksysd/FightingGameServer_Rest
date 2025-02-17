@@ -13,7 +13,7 @@ public static class CustomCommandDtoExtension
         {
             Command = customCommand.Command,
             CharacterName = customCommand.Character.Name,
-            SkillName = customCommand.Skill.Name,
+            SkillName = customCommand.Skill.Name
         };
     }
 }

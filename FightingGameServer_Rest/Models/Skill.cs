@@ -1,6 +1,6 @@
 ﻿namespace FightingGameServer_Rest.Models;
 
-public class Skill
+public sealed class Skill
 {
     public int Id { get; set; }
     public required string Name { get; set; }
@@ -17,6 +17,6 @@ public class Skill
     public required List<string> DefaultCommand { get; set; }
     public required int CharacterId { get; set; }
     
-    public virtual Character? Character { get; set; }
-    public virtual IEnumerable<CustomCommand>? CustomCommands { get; set; }
+    public Character? Character { get; set; }
+    public IEnumerable<CustomCommand>? CustomCommands { get; set; }
 }

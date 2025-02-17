@@ -4,17 +4,6 @@ namespace FightingGameServer_Rest.Authorization;
 
 public static class RoleHierarchy
 {
-    public static bool IsInRole(string userRole, string requiredRole)
-    {
-        if (!Enum.TryParse(userRole, out User.RoleType userRoleType) ||
-            !Enum.TryParse(requiredRole, out User.RoleType requiredRoleType))
-        {
-            throw new ArgumentException("Invalid role type");
-        }
-        
-        return IsInRole(userRoleType, requiredRoleType);
-    }
-
     public static bool IsInRole(User.RoleType userRoleType, User.RoleType requiredRoleType)
     {
         if (userRoleType == requiredRoleType) return true;

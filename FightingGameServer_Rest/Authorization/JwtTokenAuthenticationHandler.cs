@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -9,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FightingGameServer_Rest.Authorization;
 
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 public class JwtTokenAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,

@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using FightingGameServer_Rest.Dtos.CustomCommand;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace FightingGameServer_Rest.Controllers;
 
 [ApiController]
 [Route("api/customCommand")]
+[SuppressMessage("Usage", "CA2254:템플릿은 정적 표현식이어야 합니다.")]
 public class CustomCommandController(
     ICustomCommandManageService customCommandManageService,
     ILogger<CustomCommandController> logger) : ControllerBase

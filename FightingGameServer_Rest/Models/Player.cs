@@ -3,7 +3,7 @@
 namespace FightingGameServer_Rest.Models;
 
 [SuppressMessage("ReSharper", "EntityFramework.ModelValidation.UnlimitedStringLength")]
-public class Player
+public sealed class Player
 {
     public int Id { get; set; }
 
@@ -12,8 +12,8 @@ public class Player
     public required int MatchCount { get; set; }
     public required int UserId { get; set; }
 
-    public virtual User? User { get; set; }
-    public virtual IEnumerable<CustomCommand>? CustomCommands { get; set; }
-    public virtual IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
-    public virtual IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
+    public User? User { get; set; }
+    public IEnumerable<CustomCommand>? CustomCommands { get; set; }
+    public IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
+    public IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
 }

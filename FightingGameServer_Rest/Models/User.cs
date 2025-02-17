@@ -3,7 +3,7 @@
 namespace FightingGameServer_Rest.Models;
 
 [SuppressMessage("ReSharper", "EntityFramework.ModelValidation.UnlimitedStringLength")]
-public class User
+public sealed class User
 {
     public enum RoleType
     {
@@ -16,5 +16,5 @@ public class User
     public required string Salt { get; set; }
     public required RoleType Role { get; set; }
 
-    public virtual Player? Player { get; set; }
+    public Player? Player { get; set; }
 }

@@ -47,6 +47,6 @@ public class CustomCommandService(ICustomCommandRepository customCommandReposito
 
     public async Task<CustomCommand> DeleteCustomCommand(CustomCommand customCommand)
     {
-        return await customCommandRepository.DeleteAsync(customCommand.Id, customCommand);
+        return await customCommandRepository.DeleteAsync(customCommand.Id);
     }
 }

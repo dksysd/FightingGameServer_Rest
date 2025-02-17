@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Transactions;
 using FightingGameServer_Rest.Dtos.CustomCommand;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
-using MySqlConnector;
 
 namespace FightingGameServer_Rest.Services.ApplicationServices;
 

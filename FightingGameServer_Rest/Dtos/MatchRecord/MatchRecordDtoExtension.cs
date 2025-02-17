@@ -22,7 +22,7 @@ public static class MatchRecordDtoExtension
             WinnerPlayer = matchRecord.WinnerPlayer.ToDto(),
             WinnerCharacter = matchRecord.WinnerPlayerCharacter.ToDto(),
             LoserPlayer = matchRecord.LoserPlayer.ToDto(),
-            LoserCharacter = matchRecord.LoserPlayerCharacter.ToDto(),
+            LoserCharacter = matchRecord.LoserPlayerCharacter.ToDto()
         };
     }
 }
