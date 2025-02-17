@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FightingGameServer_Rest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d65bde3d2e5074795c5189b79c24d3f8b69ab09b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8cd06c4f21ca35c0d57d2ddb65824f05159dd3fe")]
 [assembly: System.Reflection.AssemblyProductAttribute("FightingGameServer_Rest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FightingGameServer_Rest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

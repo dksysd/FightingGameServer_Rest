@@ -58,12 +58,15 @@ public class AuthService(
             throw new InvalidOperationException("Invalid login password");
         }
 
-        string accessToken = GenerateAccessToken(user.Id.ToString());
+        string accessToken = GenerateAccessToken(user.Id.ToString(), user.Role.ToString());
         string refreshToken = GenerateRefreshToken();
 
         MemoryCacheEntryOptions cacheEntryOptions = new();
         cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
-        memoryCache.Set(refreshToken, user.Id, cacheEntryOptions);
+        memoryCache.Set(refreshToken, new Memory {
+            UserId = user.Id,
+            Role = user.Role
+        }, cacheEntryOptions);
 
         return new LoginResponseDto
         {
@@ -73,26 +76,41 @@ public class AuthService(
         };
     }
 
-    public void Logout(LogoutRequestDto request)
+    public void Logout(LogoutRequestDto request, int userId)
     {
         if (string.IsNullOrEmpty(request.RefreshToken))
         {
             throw new InvalidOperationException("Refresh token is empty");
         }
 
+        if (!memoryCache.TryGetValue(request.RefreshToken, out Memory? memory) || memory is null)
+        {
+            throw new InvalidOperationException("Invalid refresh token");
+        }
+
+        if (memory.UserId != userId)
+        {
+            throw new InvalidOperationException("Invalid refresh token");
+        }
+
         memoryCache.Remove(request.RefreshToken);
     }
 
-    public RefreshResponseDto Refresh(RefreshRequestDto request)
+    public RefreshResponseDto Refresh(RefreshRequestDto request, int userId)
     {
         if (string.IsNullOrEmpty(request.RefreshToken))
         {
             throw new InvalidOperationException("Access token is empty");
         }
 
-        if (!memoryCache.TryGetValue(request.RefreshToken, out int userId))
+        if (!memoryCache.TryGetValue(request.RefreshToken, out Memory? memory) || memory is null)
         {
-            throw new InvalidOperationException("Session token expired or invalid");
+            throw new InvalidOperationException("Invalid refresh token");
+        }
+        
+        if (memory.UserId != userId)
+        {
+            throw new InvalidOperationException("Invalid refresh token");
         }
 
         memoryCache.Remove(request.RefreshToken);
@@ -100,9 +118,9 @@ public class AuthService(
         string refreshToken = GenerateRefreshToken();
         MemoryCacheEntryOptions cacheEntryOptions = new();
         cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
-        memoryCache.Set(refreshToken, userId, cacheEntryOptions);
+        memoryCache.Set(refreshToken, memory, cacheEntryOptions);
 
-        string accessToken = GenerateAccessToken(userId.ToString());
+        string accessToken = GenerateAccessToken(memory.UserId.ToString(), memory.Role.ToString());
 
         return new RefreshResponseDto
         {
@@ -155,12 +173,15 @@ public class AuthService(
         return array1.SequenceEqual(array2);
     }
 
-    private string GenerateAccessToken(string userId)
+    private string GenerateAccessToken(string userId, string role)
     {
         JwtSecurityTokenHandler tokenHandler = new();
         SecurityTokenDescriptor tokenDescription = new()
         {
-            Subject = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)]),
+            Subject = new ClaimsIdentity([
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Role, role),
+            ]),
             Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),
                 SecurityAlgorithms.HmacSha256Signature)
@@ -172,5 +193,12 @@ public class AuthService(
     private static string GenerateRefreshToken()
     {
         return Guid.NewGuid().ToString();
+    }
+
+
+    private class Memory
+    {
+        public int UserId { get; set; }
+        public User.RoleType Role { get; set; }
     }
 }

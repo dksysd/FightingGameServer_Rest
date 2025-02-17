@@ -1,4 +1,5 @@
-﻿using FightingGameServer_Rest.Dtos.Auth;
+﻿using System.Security.Claims;
+using FightingGameServer_Rest.Dtos.Auth;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +69,10 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            authService.Logout(logoutRequestDto);
+            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
+            
+            authService.Logout(logoutRequestDto, userId);
             logger.LogInformation($"Logout user (refresh token : {logoutRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok());
         }
@@ -90,7 +94,10 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            RefreshResponseDto refreshResponseDto = authService.Refresh(refreshRequestDto);
+            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
+            
+            RefreshResponseDto refreshResponseDto = authService.Refresh(refreshRequestDto, userId);
             logger.LogInformation($"Refresh user (refresh token : {refreshRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok(refreshResponseDto));
         }
