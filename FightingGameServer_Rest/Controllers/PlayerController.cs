@@ -10,7 +10,6 @@ namespace FightingGameServer_Rest.Controllers;
 [Route("api/player")]
 public class PlayerController(IPlayerInfoService playerInfoService, ILogger<PlayerController> logger) : ControllerBase
 {
-    [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreatePlayer([FromBody] CreatePlayerRequestDto createPlayerRequestDto)
     {

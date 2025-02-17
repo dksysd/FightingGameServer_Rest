@@ -1,6 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using FightingGameServer_Rest;
 using FightingGameServer_Rest.Authorization;
 using FightingGameServer_Rest.Data;
+using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Repositories;
 using FightingGameServer_Rest.Repositories.Interfaces;
 using FightingGameServer_Rest.Services.ApplicationServices;
@@ -9,6 +11,7 @@ using FightingGameServer_Rest.Services.DataServices;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
 using FightingGameServer_Rest.Swagger;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -38,6 +41,7 @@ app.Run();
 namespace FightingGameServer_Rest
 {
     // --- 확장 메서드 정의 ---
+    [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
     internal static class ServiceCollectionExtensions
     {
         // 서비스 DI 설정 
@@ -103,7 +107,11 @@ namespace FightingGameServer_Rest
         // 인가 설정 
         public static void ConfigureAuthorization(this WebApplicationBuilder builder)
         {
-            builder.Services.AddAuthorization(options => { options.FallbackPolicy = options.DefaultPolicy; });
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("Admin", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.Admin)))
+                .AddPolicy("User", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.User)))
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("JwtToken").RequireAuthenticatedUser().Build());
+            builder.Services.AddSingleton<IAuthorizationHandler, MinimumRoleHandler>();
         }
 
         // Swagger 설정 
@@ -135,7 +143,7 @@ namespace FightingGameServer_Rest
                         new List<string>()
                     }
                 });
-                
+
                 options.SchemaFilter<EnumSchemaFilter>();
             });
         }

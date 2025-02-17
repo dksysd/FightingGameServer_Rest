@@ -58,10 +58,12 @@ public class JwtTokenAuthenticationHandler(
         string userId =
             jwtSecurityToken.Claims.First(claim => claim.Type == "nameid").Value ??
             throw new InvalidOperationException("No user id claim");
+        string role = jwtSecurityToken.Claims.First(claim => claim.Type == "role").Value ?? throw new InvalidOperationException("No role claim");
 
         Claim[] claims =
         [
-            new(ClaimTypes.NameIdentifier, userId)
+            new(ClaimTypes.NameIdentifier, userId),
+            new (ClaimTypes.Role, role)
         ];
         ClaimsIdentity identity = new(claims, Scheme.Name);
         ClaimsPrincipal principal = new(identity);
