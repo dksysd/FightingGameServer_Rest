@@ -198,7 +198,7 @@ public class AuthService(
 
     private class Memory
     {
-        public int UserId { get; set; }
-        public User.RoleType Role { get; set; }
+        public int UserId { get; init; }
+        public User.RoleType Role { get; init; }
     }
 }

@@ -110,7 +110,7 @@ public class CustomCommandManageService(
 
     private class UpdateCustomCommandRequest
     {
-        public required UpdateCustomCommandRequestDto.ActionType Action { get; set; }
-        public required CustomCommand CustomCommand { get; set; }
+        public required UpdateCustomCommandRequestDto.ActionType Action { get; init; }
+        public required CustomCommand CustomCommand { get; init; }
     }
 }
