@@ -14,12 +14,11 @@ using Microsoft.IdentityModel.Tokens;
 namespace FightingGameServer_Rest.Services.ApplicationServices;
 
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class AuthService(
     IUserService userService,
-    IPlayerService playerService,
     IConfiguration configuration,
-    IMemoryCache memoryCache,
-    ILogger<AuthService> logger) : IAuthService
+    IMemoryCache memoryCache) : IAuthService
 {
     private readonly byte[] _secretKeyBytes = Encoding.UTF8.GetBytes(
         configuration.GetValue<string>("JwtSettings:SecretKey") ??
@@ -44,11 +43,12 @@ public class AuthService(
             LoginId = request.LoginId,
             LoginPassword = password,
             Salt = salt,
+            Role = User.RoleType.User
         };
-
+        
         await userService.CreateUser(newUser);
     }
-
+    
     public async Task<LoginResponseDto> Login(LoginRequestDto request)
     {
         User user = await userService.GetUserByLoginId(request.LoginId);
@@ -69,6 +69,7 @@ public class AuthService(
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
+            Role = user.Role.ToString()
         };
     }
 

@@ -21,10 +21,12 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         try
         {
             await authService.Register(registerRequestDto);
+            logger.LogInformation($"Registering new user (id: {registerRequestDto.LoginId})");
             return Ok(new { message = "Registration successful" });
         }
         catch (InvalidOperationException operationException)
         {
+            logger.LogWarning(operationException.Message);
             return Conflict(new { message = operationException.Message });
         }
         catch (Exception ex)
@@ -46,10 +48,12 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         try
         {
             LoginResponseDto loginResponseDto = await authService.Login(loginRequestDto);
+            logger.LogInformation($"Login new user (id: {loginRequestDto.LoginId})");
             return Ok(loginResponseDto);
         }
         catch (InvalidOperationException operationException)
         {
+            logger.LogWarning(operationException.Message);
             return Conflict(new { message = operationException.Message });
         }
         catch (Exception ex)
@@ -58,18 +62,19 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
         }
     }
-
-    [Authorize]
+    
     [HttpPost("logout")]
     public Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
         try
         {
             authService.Logout(logoutRequestDto);
+            logger.LogInformation($"Logout user (refresh token : {logoutRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (InvalidOperationException operationException)
         {
+            logger.LogWarning(operationException.Message);
             return Task.FromResult<IActionResult>(Conflict(new { message = operationException.Message }));
         }
         catch (Exception ex)
@@ -79,18 +84,19 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
                 new { message = "Internal Server Error" }));
         }
     }
-
-    [AllowAnonymous]
+    
     [HttpPost("refresh")]
     public Task<IActionResult> Refresh([FromBody] RefreshRequestDto refreshRequestDto)
     {
         try
         {
             RefreshResponseDto refreshResponseDto = authService.Refresh(refreshRequestDto);
+            logger.LogInformation($"Refresh user (refresh token : {refreshRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok(refreshResponseDto));
         }
         catch (InvalidOperationException operationException)
         {
+            logger.LogWarning(operationException.Message);
             return Task.FromResult<IActionResult>(Conflict(new { message = operationException.Message }));
         }
         catch (Exception ex)

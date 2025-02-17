@@ -27,6 +27,7 @@ public class CustomCommandManageService(
         return customCommands.Select(customCommand => customCommand.ToDto());
     }
 
+    // todo patch 방식이 아닌, post 방식으로 변경 (전체 번경)
     public async Task<bool> SetCustomCommands(
         IEnumerable<UpdateCustomCommandRequestDto> requests,
         int userId)

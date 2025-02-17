@@ -20,6 +20,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.LoginPassword).HasColumnName("login_password").HasMaxLength(255).IsRequired();
 
         builder.Property(user => user.Salt).HasColumnName("salt").HasMaxLength(255).IsRequired();
+        
+        builder.Property(user => user.Role).HasColumnName("role").IsRequired();
 
         builder.HasOne(user => user.Player).WithOne(player => player.User)
             .HasForeignKey<Player>(player => player.UserId).OnDelete(DeleteBehavior.Cascade);
