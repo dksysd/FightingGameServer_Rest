@@ -3,12 +3,12 @@
 public sealed class CustomCommand
 {
     public int Id { get; set; }
-    public required List<string> Command { get; set; }
-    public required int PlayerId { get; set; }
-    public required int CharacterId { get; set; }
-    public required int SkillId { get; set; }
+    public required List<string> Command { get; init; }
+    public required int PlayerId { get; init; }
+    public required int CharacterId { get; init; }
+    public required int SkillId { get; init; }
 
-    public Player? Player { get; set; }
-    public Character? Character { get; set; }
-    public Skill? Skill { get; set; }
+    public Player? Player { get; init; }
+    public Character? Character { get; init; }
+    public Skill? Skill { get; init; }
 }

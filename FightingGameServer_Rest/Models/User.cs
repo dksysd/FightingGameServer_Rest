@@ -7,14 +7,15 @@ public sealed class User
 {
     public enum RoleType
     {
-        Admin, User
+        Admin,
+        User
     }
-    
-    public int Id { get; set; }
-    public required string LoginId { get; set; }
-    public required string LoginPassword { get; set; }
-    public required string Salt { get; set; }
-    public required RoleType Role { get; set; }
 
-    public Player? Player { get; set; }
+    public int Id { get; init; }
+    public required string LoginId { get; init; }
+    public required string LoginPassword { get; init; }
+    public required string Salt { get; init; }
+    public required RoleType Role { get; init; }
+
+    public Player? Player { get; init; }
 }

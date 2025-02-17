@@ -1,5 +1,8 @@
-﻿namespace FightingGameServer_Rest.Dtos.Players;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FightingGameServer_Rest.Dtos.Players;
+
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class PlayerDto
 {
     public required string Name { get; set; }

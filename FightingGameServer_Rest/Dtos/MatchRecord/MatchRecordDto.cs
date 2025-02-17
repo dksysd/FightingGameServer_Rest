@@ -1,8 +1,10 @@
-﻿using FightingGameServer_Rest.Dtos.Character;
+﻿using System.Diagnostics.CodeAnalysis;
+using FightingGameServer_Rest.Dtos.Character;
 using FightingGameServer_Rest.Dtos.Players;
 
 namespace FightingGameServer_Rest.Dtos.MatchRecord;
 
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class MatchRecordDto
 {
     public required DateTime StartedAt { get; set; }

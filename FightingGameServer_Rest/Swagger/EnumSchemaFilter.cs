@@ -10,6 +10,7 @@ public class EnumSchemaFilter : ISchemaFilter
 {
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
+        // ReSharper disable once InvertIf
         if (context.Type.IsEnum) // 타입이 Enum인지 확인
         {
             schema.Type = "string"; // 스키마 타입을 string으로 변경

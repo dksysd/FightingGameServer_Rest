@@ -86,6 +86,7 @@ namespace FightingGameServer_Rest
                                                                                 "Connection string is missing")));
 
                 // 개발 환경 설정 
+                // ReSharper disable once InvertIf
                 if (builder.Environment.IsDevelopment())
                 {
                     options.EnableDetailedErrors();

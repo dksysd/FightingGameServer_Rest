@@ -2,17 +2,17 @@
 
 public sealed class Character
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required int Health { get; set; }
-    public required int Strength { get; set; }
-    public required int Dexterity { get; set; }
-    public required int Intelligence { get; set; }
-    public required float MoveSpeed { get; set; }
-    public required float AttackSpeed { get; set; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required int Health { get; init; }
+    public required int Strength { get; init; }
+    public required int Dexterity { get; init; }
+    public required int Intelligence { get; init; }
+    public required float MoveSpeed { get; init; }
+    public required float AttackSpeed { get; init; }
     
-    public IEnumerable<Skill>? Skills { get; set; }
-    public IEnumerable<CustomCommand>? CustomCommands { get; set; }
-    public IEnumerable<MatchRecord>? WonMatchRecords { get; set; }
-    public IEnumerable<MatchRecord>? LostMatchRecords { get; set; }
+    public IEnumerable<Skill>? Skills { get; init; }
+    public IEnumerable<CustomCommand>? CustomCommands { get; init; }
+    public IEnumerable<MatchRecord>? WonMatchRecords { get; init; }
+    public IEnumerable<MatchRecord>? LostMatchRecords { get; init; }
 }

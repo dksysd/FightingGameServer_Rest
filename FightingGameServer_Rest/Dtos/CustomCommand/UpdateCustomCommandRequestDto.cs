@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 namespace FightingGameServer_Rest.Dtos.CustomCommand;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class UpdateCustomCommandRequestDto
 {
     public enum ActionType
@@ -14,7 +15,7 @@ public class UpdateCustomCommandRequestDto
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<ActionType>))]
-    public required ActionType Action { get; set; }
+    public required ActionType Action { get; init; }
 
-    public required CustomCommandDto CustomCommand { get; set; }
+    public required CustomCommandDto CustomCommand { get; init; }
 }

@@ -1,5 +1,8 @@
-﻿namespace FightingGameServer_Rest.Dtos.Skills;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FightingGameServer_Rest.Dtos.Skills;
+
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class SkillDto
 {
     public required string Name { get; set; }

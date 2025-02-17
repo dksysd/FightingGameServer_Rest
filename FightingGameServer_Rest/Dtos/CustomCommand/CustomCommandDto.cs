@@ -2,7 +2,7 @@
 
 public class CustomCommandDto
 {
-    public required List<string> Command { get; set; }
-    public required string CharacterName { get; set; }
-    public required string SkillName { get; set; }
+    public required List<string> Command { get; init; }
+    public required string CharacterName { get; init; }
+    public required string SkillName { get; init; }
 }

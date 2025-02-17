@@ -2,21 +2,21 @@
 
 public sealed class Skill
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Description { get; set; }
-    public required bool IsPassive { get; set; }
-    public required int CoolTime { get; set; }
-    public required int Range { get; set; }
-    public required float HealthCoefficient { get; set; }
-    public required float StrengthCoefficient { get; set; }
-    public required float DexterityCoefficient { get; set; }
-    public required float IntelligenceCoefficient { get; set; }
-    public required float MoveSpeedCoefficient { get; set; }
-    public required float AttackSpeedCoefficient { get; set; }
-    public required List<string> DefaultCommand { get; set; }
-    public required int CharacterId { get; set; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required bool IsPassive { get; init; }
+    public required int CoolTime { get; init; }
+    public required int Range { get; init; }
+    public required float HealthCoefficient { get; init; }
+    public required float StrengthCoefficient { get; init; }
+    public required float DexterityCoefficient { get; init; }
+    public required float IntelligenceCoefficient { get; init; }
+    public required float MoveSpeedCoefficient { get; init; }
+    public required float AttackSpeedCoefficient { get; init; }
+    public required List<string> DefaultCommand { get; init; }
+    public required int CharacterId { get; init; }
     
-    public Character? Character { get; set; }
-    public IEnumerable<CustomCommand>? CustomCommands { get; set; }
+    public Character? Character { get; init; }
+    public IEnumerable<CustomCommand>? CustomCommands { get; init; }
 }
