@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using FightingGameServer_Rest.Dtos.CustomCommand;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FightingGameServer_Rest.Controllers;
@@ -13,6 +14,7 @@ public class CustomCommandController(
     ICustomCommandManageService customCommandManageService,
     ILogger<CustomCommandController> logger) : ControllerBase
 {
+    [Authorize]
     [HttpGet("all")]
     public async Task<IActionResult> GetCustomCommands()
     {
@@ -35,6 +37,7 @@ public class CustomCommandController(
         }
     }
     
+    [Authorize]
     [HttpPost("set")]
     public async Task<IActionResult> SetCustomCommands(
         [FromBody] IEnumerable<UpdateCustomCommandRequestDto> updateCustomCommandRequestDtos)

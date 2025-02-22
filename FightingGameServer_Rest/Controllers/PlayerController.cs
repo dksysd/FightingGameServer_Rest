@@ -12,6 +12,7 @@ namespace FightingGameServer_Rest.Controllers;
 [SuppressMessage("Usage", "CA2254:템플릿은 정적 표현식이어야 합니다.")]
 public class PlayerController(IPlayerInfoService playerInfoService, ILogger<PlayerController> logger) : ControllerBase
 {
+    [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreatePlayer([FromBody] CreatePlayerRequestDto createPlayerRequestDto)
     {

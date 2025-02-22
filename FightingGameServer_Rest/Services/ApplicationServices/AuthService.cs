@@ -45,10 +45,10 @@ public class AuthService(
             Salt = salt,
             Role = User.RoleType.User
         };
-        
+
         await userService.CreateUser(newUser);
     }
-    
+
     public async Task<LoginResponseDto> Login(LoginRequestDto request)
     {
         User user = await userService.GetUserByLoginId(request.LoginId);
@@ -63,7 +63,8 @@ public class AuthService(
 
         MemoryCacheEntryOptions cacheEntryOptions = new();
         cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
-        memoryCache.Set(refreshToken, new Memory {
+        memoryCache.Set(refreshToken, new Memory
+        {
             UserId = user.Id,
             Role = user.Role
         }, cacheEntryOptions);
@@ -107,7 +108,7 @@ public class AuthService(
         {
             throw new InvalidOperationException("Invalid refresh token");
         }
-        
+
         if (memory.UserId != userId)
         {
             throw new InvalidOperationException("Invalid refresh token");
@@ -126,6 +127,25 @@ public class AuthService(
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken
+        };
+    }
+
+    public WebSocketTokenResponseDto GetWebSocketToken(string userId)
+    {
+        JwtSecurityTokenHandler tokenHandler = new();
+        SecurityTokenDescriptor tokenDescription = new()
+        {
+            Subject = new ClaimsIdentity([
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            ]),
+            Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),
+                SecurityAlgorithms.HmacSha256Signature)
+        };
+        SecurityToken? token = tokenHandler.CreateToken(tokenDescription);
+        return new WebSocketTokenResponseDto
+        {
+            WebSocketToken = tokenHandler.WriteToken(token)
         };
     }
 

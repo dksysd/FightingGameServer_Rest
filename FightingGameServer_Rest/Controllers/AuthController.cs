@@ -17,11 +17,6 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         try
         {
             await authService.Register(registerRequestDto);
@@ -66,7 +61,8 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
         }
     }
-    
+
+    [Authorize]
     [HttpPost("logout")]
     public Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
@@ -74,7 +70,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
-            
+
             authService.Logout(logoutRequestDto, userId);
             logger.LogInformation($"Logout user (refresh token : {logoutRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok());
@@ -91,7 +87,8 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
                 new { message = "Internal Server Error" }));
         }
     }
-    
+
+    [Authorize]
     [HttpPost("refresh")]
     public Task<IActionResult> Refresh([FromBody] RefreshRequestDto refreshRequestDto)
     {
@@ -99,10 +96,35 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
-            
+
             RefreshResponseDto refreshResponseDto = authService.Refresh(refreshRequestDto, userId);
             logger.LogInformation($"Refresh user (refresh token : {refreshRequestDto.RefreshToken})");
             return Task.FromResult<IActionResult>(Ok(refreshResponseDto));
+        }
+        catch (InvalidOperationException operationException)
+        {
+            logger.LogWarning(operationException.Message);
+            return Task.FromResult<IActionResult>(Conflict(new { message = operationException.Message }));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status500InternalServerError,
+                new { message = "Internal Server Error" }));
+        }
+    }
+
+    [Authorize]
+    [HttpPost("websocket-token")]
+    public Task<IActionResult> GetWebSocketToken()
+    {
+        try
+        {
+            string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+                            throw new InvalidOperationException("Invalid user id");
+            WebSocketTokenResponseDto wsTokenResponseDto = authService.GetWebSocketToken(userId);
+            logger.LogInformation($"Websocket token generated (user id : {userId})");
+            return Task.FromResult<IActionResult>(Ok(wsTokenResponseDto));
         }
         catch (InvalidOperationException operationException)
         {
