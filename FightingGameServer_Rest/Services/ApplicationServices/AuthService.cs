@@ -30,6 +30,9 @@ public class AuthService(
     private readonly TimeSpan _refreshTokenExpirationMinutes =
         TimeSpan.FromMinutes(configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationMinutes"));
 
+    private readonly TimeSpan _webSocketTokenExpirationMinutes =
+        TimeSpan.FromMinutes(configuration.GetValue<int>("JwtSettings:WebSocketTokenExpirationMinutes"));
+
     public async Task Register(RegisterRequestDto request)
     {
         byte[] saltBytes = GenerateSalt();
@@ -138,7 +141,7 @@ public class AuthService(
             Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.NameIdentifier, userId)
             ]),
-            Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
+            Expires = DateTime.UtcNow.Add(_webSocketTokenExpirationMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),
                 SecurityAlgorithms.HmacSha256Signature)
         };
