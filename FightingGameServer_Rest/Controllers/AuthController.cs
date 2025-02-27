@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using FightingGameServer_Rest.Dtos.Auth;
+using FightingGameServer_Rest.Domains.Auth.Dtos;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -115,15 +115,16 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     }
 
     [Authorize]
+    [Authorize(Policy = "HasPlayer")]
     [HttpPost("websocket-token")]
     public Task<IActionResult> GetWebSocketToken()
     {
         try
         {
-            string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+            string playerId = HttpContext.User.FindFirst("playerId")?.Value ??
                             throw new InvalidOperationException("Invalid user id");
-            WebSocketTokenResponseDto wsTokenResponseDto = authService.GetWebSocketToken(userId);
-            logger.LogInformation($"Websocket token generated (user id : {userId})");
+            WebSocketTokenResponseDto wsTokenResponseDto = authService.GetWebSocketToken(playerId);
+            logger.LogInformation($"Websocket token generated (player id : {playerId})");
             return Task.FromResult<IActionResult>(Ok(wsTokenResponseDto));
         }
         catch (InvalidOperationException operationException)

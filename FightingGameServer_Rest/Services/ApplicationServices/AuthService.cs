@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using FightingGameServer_Rest.Dtos.Auth;
+using FightingGameServer_Rest.Domains.Auth.Dtos;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
@@ -133,13 +133,13 @@ public class AuthService(
         };
     }
 
-    public WebSocketTokenResponseDto GetWebSocketToken(string userId)
+    public WebSocketTokenResponseDto GetWebSocketToken(string playerId)
     {
         JwtSecurityTokenHandler tokenHandler = new();
         SecurityTokenDescriptor tokenDescription = new()
         {
             Subject = new ClaimsIdentity([
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim(ClaimTypes.NameIdentifier, playerId)
             ]),
             Expires = DateTime.UtcNow.Add(_webSocketTokenExpirationMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),

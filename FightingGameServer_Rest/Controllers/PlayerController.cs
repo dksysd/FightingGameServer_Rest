@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using FightingGameServer_Rest.Dtos.Players;
+using FightingGameServer_Rest.Domains.Player.Dtos;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

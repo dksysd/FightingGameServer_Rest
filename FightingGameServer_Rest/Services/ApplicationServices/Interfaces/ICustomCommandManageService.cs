@@ -1,4 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos.CustomCommand;
+﻿using FightingGameServer_Rest.Domains.CustomCommand.Dtos;
 
 namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 

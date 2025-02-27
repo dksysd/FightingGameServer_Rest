@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using FightingGameServer_Rest.Dtos.CustomCommand;
+using FightingGameServer_Rest.Domains.CustomCommand.Dtos;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +15,7 @@ public class CustomCommandController(
     ILogger<CustomCommandController> logger) : ControllerBase
 {
     [Authorize]
+    [Authorize(Policy = "HasPlayer")]
     [HttpGet("all")]
     public async Task<IActionResult> GetCustomCommands()
     {

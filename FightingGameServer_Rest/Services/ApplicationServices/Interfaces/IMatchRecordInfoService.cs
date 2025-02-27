@@ -1,4 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos.MatchRecord;
+﻿using FightingGameServer_Rest.Domains.MatchRecord.Dtos;
 
 namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 

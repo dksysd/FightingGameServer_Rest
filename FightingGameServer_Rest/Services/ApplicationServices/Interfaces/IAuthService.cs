@@ -1,4 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos.Auth;
+﻿using FightingGameServer_Rest.Domains.Auth.Dtos;
 
 namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 
@@ -8,5 +8,5 @@ public interface IAuthService
     Task<LoginResponseDto> Login(LoginRequestDto request);
     void Logout(LogoutRequestDto request, int userId);
     RefreshResponseDto Refresh(RefreshRequestDto request, int userId);
-    WebSocketTokenResponseDto GetWebSocketToken(string userId);
+    WebSocketTokenResponseDto GetWebSocketToken(string playerId);
 }

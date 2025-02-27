@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using FightingGameServer_Rest.Dtos.Character;
+using FightingGameServer_Rest.Domains.Character.Dtos;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

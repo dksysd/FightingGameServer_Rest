@@ -1,4 +1,4 @@
-﻿using FightingGameServer_Rest.Dtos.Players;
+﻿using FightingGameServer_Rest.Domains.Player.Dtos;
 using FightingGameServer_Rest.Models;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;

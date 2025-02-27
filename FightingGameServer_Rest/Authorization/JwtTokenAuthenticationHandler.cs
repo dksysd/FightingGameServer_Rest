@@ -16,12 +16,8 @@ public class JwtTokenAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IConfiguration configuration) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    JwtTokenExtractor jwtTokenExtractor) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
-    private readonly byte[] _secretKeyBytes = Encoding.UTF8.GetBytes(
-        configuration.GetValue<string>("JwtSettings:SecretKey") ??
-        throw new InvalidOperationException("Jwt secret key is missing."));
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Request.Headers.TryGetValue("Authorization", out StringValues authorizationHeader))
@@ -36,20 +32,11 @@ public class JwtTokenAuthenticationHandler(
         }
 
         accessToken = accessToken["Bearer ".Length..];
-
-        JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
         SecurityToken validatedToken;
+        
         try
         {
-            jwtSecurityTokenHandler.ValidateToken(accessToken, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(_secretKeyBytes),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            }, out validatedToken);
+            validatedToken = jwtTokenExtractor.ExtractToken(accessToken);
         }
         catch (SecurityTokenExpiredException expiredException)
         {
@@ -58,16 +45,27 @@ public class JwtTokenAuthenticationHandler(
         
 
         JwtSecurityToken jwtSecurityToken = (JwtSecurityToken)validatedToken;
-        string userId =
-            jwtSecurityToken.Claims.First(claim => claim.Type == "nameid").Value ??
-            throw new InvalidOperationException("No user id claim");
-        string role = jwtSecurityToken.Claims.First(claim => claim.Type == "role").Value ?? throw new InvalidOperationException("No role claim");
+        Claim? userIdClaim = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+        if (userIdClaim is null)
+        {
+            return Task.FromResult(AuthenticateResult.Fail("No user id claim"));
+        }
+        Claim? roleClaim = jwtSecurityToken.Claims.First(claim => claim.Type == "role");
+        if (roleClaim is null)
+        {
+            return Task.FromResult(AuthenticateResult.Fail("No role claim"));
+        }
+        Claim? playerIdClaim = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "playerId");
 
-        Claim[] claims =
+        List<Claim> claims =
         [
-            new(ClaimTypes.NameIdentifier, userId),
-            new (ClaimTypes.Role, role)
+            new(ClaimTypes.NameIdentifier, userIdClaim.Value),
+            new (ClaimTypes.Role, roleClaim.Value),
         ];
+        if (playerIdClaim is not null)
+        {
+            claims.Add(new Claim("playerId", playerIdClaim.Value));
+        }
         ClaimsIdentity identity = new(claims, Scheme.Name);
         ClaimsPrincipal principal = new(identity);
         AuthenticationTicket ticket = new(principal, Scheme.Name);
