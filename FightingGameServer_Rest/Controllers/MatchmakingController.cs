@@ -26,52 +26,69 @@ public class MatchmakingController(
     [HttpGet]
     public async Task Get()
     {
-        if (!HttpContext.WebSockets.IsWebSocketRequest)
-        {
-            logger.LogWarning("Invalid WebSocket Request");
-            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            return;
-        }
-
-        StringValues token = HttpContext.Request.Query["websocket_token"];
-        if (token.IsNullOrEmpty())
-        {
-            logger.LogWarning("JwtToken is missing");
-            HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
-
-        SecurityToken validatedToken;
         try
         {
-            validatedToken = jwtTokenExtractor.ExtractToken(token!);
-        }
-        catch (SecurityTokenExpiredException expiredException)
-        {
-            logger.LogWarning(expiredException, "JwtToken expired");
-            HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                logger.LogWarning("Invalid WebSocket Request");
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return;
+            }
 
-        JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
-        string userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-        string playerId = jwtToken.Claims.First(x => x.Type == "playerId").Value;
-        if (userId.IsNullOrEmpty())
-        {
-            logger.LogWarning("User id is missing");
-            HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
+            StringValues token = HttpContext.Request.Query["websocket_token"];
+            if (token.IsNullOrEmpty())
+            {
+                logger.LogWarning("JwtToken is missing");
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
 
-        if (playerId.IsNullOrEmpty())
-        {
-            logger.LogWarning("Player id is missing");
-            HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
+            SecurityToken validatedToken;
+            try
+            {
+                validatedToken = jwtTokenExtractor.ExtractToken(token!);
+            }
+            catch (SecurityTokenExpiredException expiredException)
+            {
+                logger.LogWarning(expiredException, "JwtToken expired");
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
 
-        WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-        await HandleWebSocket(playerId, webSocket);
+            JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+            string userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            string playerId = jwtToken.Claims.First(x => x.Type == "playerId").Value;
+            if (userId.IsNullOrEmpty())
+            {
+                logger.LogWarning("User id is missing");
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
+
+            if (playerId.IsNullOrEmpty())
+            {
+                logger.LogWarning("Player id is missing");
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
+
+            WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            try
+            {
+                await HandleWebSocket(playerId, webSocket);
+            }
+            catch (InvalidOperationException operationException)
+            {
+                logger.LogWarning(operationException.Message);
+                HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        }
     }
 
     private async Task HandleWebSocket(string playerId, WebSocket webSocket)
