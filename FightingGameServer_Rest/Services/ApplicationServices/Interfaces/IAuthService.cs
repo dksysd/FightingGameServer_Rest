@@ -8,5 +8,6 @@ public interface IAuthService
     Task<LoginResponseDto> Login(LoginRequestDto request);
     void Logout(LogoutRequestDto request, int userId);
     RefreshResponseDto Refresh(RefreshRequestDto request, int userId);
+    
     WebSocketTokenResponseDto GetWebSocketToken(string playerId);
 }

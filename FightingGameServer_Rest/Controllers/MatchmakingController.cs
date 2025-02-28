@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Json;
 using FightingGameServer_Rest.Authorization;
 using FightingGameServer_Rest.Domains.Matchmaking.Dto;
-using FightingGameServer_Rest.Services.ApplicationServices;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -21,7 +20,7 @@ namespace FightingGameServer_Rest.Controllers;
 public class MatchmakingController(
     IMatchmakingService matchmakingService,
     JwtTokenExtractor jwtTokenExtractor,
-    ILogger<MatchmakingService> logger)
+    ILogger<MatchmakingController> logger)
     : ControllerBase
 {
     [HttpGet]
@@ -29,6 +28,7 @@ public class MatchmakingController(
     {
         if (!HttpContext.WebSockets.IsWebSocketRequest)
         {
+            logger.LogWarning("Invalid WebSocket Request");
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             return;
         }

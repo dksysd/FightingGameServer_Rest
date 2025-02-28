@@ -47,11 +47,12 @@ namespace FightingGameServer_Rest
         // 서비스 DI 설정 
         public static void ConfigurationApplicationServices(this WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<ICharacterInfoService, CharacterInfoService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICharacterInfoService, CharacterInfoService>();
             builder.Services.AddScoped<ICustomCommandManageService, CustomCommandManageService>();
-            builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
+            builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
             builder.Services.AddScoped<IMatchRecordInfoService, MatchRecordInfoService>();
+            builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
         }
 
         public static void ConfigurationDataServices(this WebApplicationBuilder builder)
@@ -173,6 +174,7 @@ namespace FightingGameServer_Rest
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseWebSockets();
             app.MapControllers();
         }
     }

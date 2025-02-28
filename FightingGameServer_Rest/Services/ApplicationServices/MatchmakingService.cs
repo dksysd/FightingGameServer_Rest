@@ -14,11 +14,12 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
 public class MatchmakingService(
-    PlayerGraph graph,
     IMatchRecordService matchRecordService,
     IPlayerService playerService,
     ICharacterService characterService) : IMatchmakingService
 {
+    private readonly PlayerGraph _graph = new();
+    
     private readonly Dictionary<string, WebSocket> _connections = new();
 
     private readonly Dictionary<string, MatchResult> _matchResults = new();
@@ -26,9 +27,9 @@ public class MatchmakingService(
     public async Task AddPlayerAsync(string playerId, WebSocket webSocket)
     {
         _connections[playerId] = webSocket;
-        graph.AddPlayer(playerId);
+        _graph.AddPlayer(playerId);
 
-        List<string> waitingUsers = graph.GetWaitingPlayers().Where(u => u != playerId).ToList();
+        List<string> waitingUsers = _graph.GetWaitingPlayers().Where(u => u != playerId).ToList();
         await SendMessageAsync(playerId, $"PingTest:{JsonSerializer.Serialize(waitingUsers)}");
     }
 
@@ -44,17 +45,17 @@ public class MatchmakingService(
             _connections.Remove(playerId);
         }
 
-        graph.RemovePlayer(playerId);
+        _graph.RemovePlayer(playerId);
     }
 
     public async Task ProcessPingResultAsync(string playerId, Dictionary<string, int> pingResults)
     {
         foreach ((string targetPlayerId, int ping) in pingResults)
         {
-            graph.UpdatePing(playerId, targetPlayerId, ping);
+            _graph.UpdatePing(playerId, targetPlayerId, ping);
         }
 
-        (string playerId1, string playerId2, int ping)? match = graph.FindBestMatch();
+        (string playerId1, string playerId2, int ping)? match = _graph.FindBestMatch();
         if (match.HasValue)
         {
             string matchId = Guid.NewGuid().ToString();
@@ -131,7 +132,7 @@ public class MatchmakingService(
                 SendMessageAsync(matchResult.Player1Id, "Result: Confirmed"),
                 SendMessageAsync(matchResult.Player2Id, "Result: Confirmed")
             );
-            
+
             _matchResults.Remove(matchResultDto.MatchId);
         }
     }
