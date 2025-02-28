@@ -74,19 +74,19 @@ public class MatchmakingService(
         }
     }
 
-    public async Task ProcessMatchResultAsync(string userId, MatchResultDto matchResultDto)
+    public async Task ProcessMatchResultAsync(string playerId, MatchResultDto matchResultDto)
     {
         if (!_matchResults.TryGetValue(matchResultDto.MatchId, out MatchResult? matchResult))
         {
-            await SendMessageAsync(userId, $"Error: Can't find match for id {matchResultDto.MatchId}");
+            await SendMessageAsync(playerId, $"Error: Can't find match for id {matchResultDto.MatchId}");
             return;
         }
 
-        if (matchResult.Player1Id == userId)
+        if (matchResult.Player1Id == playerId)
         {
             _matchResults[matchResultDto.MatchId].Player1Result = matchResultDto;
         }
-        else if (matchResult.Player2Id == userId)
+        else if (matchResult.Player2Id == playerId)
         {
             _matchResults[matchResultDto.MatchId].Player2Result = matchResultDto;
         }
@@ -137,9 +137,9 @@ public class MatchmakingService(
         }
     }
 
-    private async Task SendMessageAsync(string userId, string message)
+    private async Task SendMessageAsync(string playerId, string message)
     {
-        if (_connections.TryGetValue(userId, out WebSocket? socket) && socket.State == WebSocketState.Open)
+        if (_connections.TryGetValue(playerId, out WebSocket? socket) && socket.State == WebSocketState.Open)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true,

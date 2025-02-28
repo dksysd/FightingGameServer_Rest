@@ -39,7 +39,7 @@ public class CustomCommandController(
     }
     
     [Authorize]
-    [HttpPost("set")]
+    [HttpPatch("set")]
     public async Task<IActionResult> SetCustomCommands(
         [FromBody] IEnumerable<UpdateCustomCommandRequestDto> updateCustomCommandRequestDtos)
     {

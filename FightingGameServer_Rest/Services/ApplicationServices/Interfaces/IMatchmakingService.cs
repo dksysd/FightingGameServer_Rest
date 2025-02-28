@@ -9,5 +9,5 @@ public interface IMatchmakingService
     Task AddPlayerAsync(string playerId, WebSocket webSocket);
     Task RemovePlayerAsync(string playerId);
     Task ProcessPingResultAsync(string playerId, Dictionary<string, int> pingResults);
-    Task ProcessMatchResultAsync(string userId, MatchResultDto matchResultDto);
+    Task ProcessMatchResultAsync(string playerId, MatchResultDto matchResultDto);
 }
