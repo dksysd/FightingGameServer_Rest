@@ -17,6 +17,7 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 [SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class AuthService(
     IUserService userService,
+    IPlayerService playerService,
     IConfiguration configuration,
     IMemoryCache memoryCache) : IAuthService
 {
@@ -124,12 +125,48 @@ public class AuthService(
         cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
         memoryCache.Set(refreshToken, memory, cacheEntryOptions);
 
-        string accessToken = GenerateAccessToken(memory.UserId.ToString(), memory.Role.ToString());
+        string accessToken = GenerateAccessToken(memory.UserId.ToString(), memory.Role.ToString(), memory.PlayerId?.ToString());
 
         return new RefreshResponseDto
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken
+        };
+    }
+
+    public async Task<LoginResponseDto> LoginPlayer(LoginPlayerRequestDto request, int userId)
+    {
+        if (!VerifyRefreshToken(request.RefreshToken, userId, out Memory? memory) || memory is null)
+        {
+            throw new InvalidOperationException("Invalid refresh token");
+        }
+
+        Player player = await playerService.GetPlayerByName(request.PlayerName);
+
+        if (player.UserId != userId)
+        {
+            throw new InvalidOperationException("Invalid player");
+        }
+
+        memoryCache.Remove(request.RefreshToken);
+
+        Memory updatedMemory = new()
+        {
+            UserId = player.Id,
+            Role = memory.Role,
+            PlayerId = player.Id
+        };
+        MemoryCacheEntryOptions cacheEntryOptions = new();
+        cacheEntryOptions.SetAbsoluteExpiration(_refreshTokenExpirationMinutes);
+        memoryCache.Set(request.RefreshToken, updatedMemory, cacheEntryOptions);
+
+        string accessToken = GenerateAccessToken(userId.ToString(), memory.Role.ToString(), player.Id.ToString());
+
+        return new LoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = request.RefreshToken,
+            Role = memory.Role.ToString()
         };
     }
 
@@ -196,15 +233,22 @@ public class AuthService(
         return array1.SequenceEqual(array2);
     }
 
-    private string GenerateAccessToken(string userId, string role)
+    private string GenerateAccessToken(string userId, string role, string? playerId = null)
     {
         JwtSecurityTokenHandler tokenHandler = new();
+        List<Claim> claims =
+        [
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Role, role)
+        ];
+        if (playerId != null)
+        {
+            claims.Add(new Claim("playerId", playerId));
+        }
+
         SecurityTokenDescriptor tokenDescription = new()
         {
-            Subject = new ClaimsIdentity([
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Role, role)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.Add(_accessTokenExpirationMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_secretKeyBytes),
                 SecurityAlgorithms.HmacSha256Signature)
@@ -218,10 +262,16 @@ public class AuthService(
         return Guid.NewGuid().ToString();
     }
 
+    private bool VerifyRefreshToken(string refreshToken, int userId, out Memory? memory)
+    {
+        return memoryCache.TryGetValue(refreshToken, out memory) && memory is not null && memory.UserId == userId;
+    }
+
 
     private class Memory
     {
         public int UserId { get; init; }
         public User.RoleType Role { get; init; }
+        public int? PlayerId { get; init; }
     }
 }

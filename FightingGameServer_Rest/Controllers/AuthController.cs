@@ -115,6 +115,31 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     }
 
     [Authorize]
+    [HttpPost("loginPlayer")]
+    public async Task<IActionResult> LoginPlayer([FromBody] LoginPlayerRequestDto loginPlayerRequestDto)
+    {
+        try
+        {
+            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
+
+            LoginResponseDto loginResponseDto = await authService.LoginPlayer(loginPlayerRequestDto, userId);
+            logger.LogInformation($"Login player (refresh token : {loginPlayerRequestDto.RefreshToken})");
+            return Ok(loginResponseDto);
+        }
+        catch (InvalidOperationException operationException)
+        {
+            logger.LogWarning(operationException.Message);
+            return Conflict(new { message = operationException.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
+        }
+    }
+
+    [Authorize]
     [Authorize(Policy = "HasPlayer")]
     [HttpPost("websocket-token")]
     public Task<IActionResult> GetWebSocketToken()
@@ -122,7 +147,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         try
         {
             string playerId = HttpContext.User.FindFirst("playerId")?.Value ??
-                            throw new InvalidOperationException("Invalid user id");
+                              throw new InvalidOperationException("Invalid user id");
             WebSocketTokenResponseDto wsTokenResponseDto = authService.GetWebSocketToken(playerId);
             logger.LogInformation($"Websocket token generated (player id : {playerId})");
             return Task.FromResult<IActionResult>(Ok(wsTokenResponseDto));
