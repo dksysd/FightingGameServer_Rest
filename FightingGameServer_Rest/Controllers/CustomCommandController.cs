@@ -15,7 +15,7 @@ public class CustomCommandController(
     ILogger<CustomCommandController> logger) : ControllerBase
 {
     [Authorize]
-    [Authorize(Policy = "HasPlayer")]
+    // [Authorize(Policy = "HasPlayer")]
     [HttpGet("all")]
     public async Task<IActionResult> GetCustomCommands()
     {
