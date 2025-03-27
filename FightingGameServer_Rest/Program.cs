@@ -112,7 +112,6 @@ namespace FightingGameServer_Rest
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("Admin", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.Admin)))
                 .AddPolicy("User", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.User)))
-                .AddPolicy("HasPlayer", policy => policy.RequireAssertion(context => context.User.HasClaim(claim => claim.Type == "playerId" && !string.IsNullOrEmpty(claim.Value))))
                 .SetDefaultPolicy(new AuthorizationPolicyBuilder("JwtToken").RequireAuthenticatedUser().Build());
             builder.Services.AddSingleton<IAuthorizationHandler, MinimumRoleHandler>();
             builder.Services.AddSingleton<JwtTokenExtractor>();
