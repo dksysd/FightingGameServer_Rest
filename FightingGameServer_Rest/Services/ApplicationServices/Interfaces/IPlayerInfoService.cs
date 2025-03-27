@@ -5,5 +5,6 @@ namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 public interface IPlayerInfoService
 {
     Task<PlayerDto> CreatePlayer(CreatePlayerRequestDto request, int userId);
+    Task<List<PlayerDto>> GetAllPlayers(int userId);
     Task<PlayerDto> GetPlayerInfo(GetPlayerInfoRequestDto request);
 }

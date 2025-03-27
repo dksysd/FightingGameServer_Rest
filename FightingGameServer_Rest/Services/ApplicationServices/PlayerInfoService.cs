@@ -27,6 +27,11 @@ public class PlayerInfoService(IPlayerService playerService) : IPlayerInfoServic
         return player.ToDto();
     }
 
+    public Task<List<PlayerDto>> GetAllPlayers(int userId)
+    {
+        return Task.FromResult(playerService.GetPlayerByUserId(userId).Result.Select(p => p.ToDto()).ToList());
+    }
+
     public async Task<PlayerDto> GetPlayerInfo(GetPlayerInfoRequestDto request)
     {
         Player player;

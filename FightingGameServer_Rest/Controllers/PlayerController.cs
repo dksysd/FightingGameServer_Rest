@@ -41,6 +41,24 @@ public class PlayerController(IPlayerInfoService playerInfoService, ILogger<Play
         }
     }
 
+    [Authorize]
+    [HttpGet("list")]
+    public async Task<IActionResult> GetAllPlayers()
+    {
+        try
+        {
+            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
+            List<PlayerDto> players = await playerInfoService.GetAllPlayers(userId);
+            return Ok(players);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
+        }
+    }
+
     [AllowAnonymous]
     [HttpGet("get")]
     public async Task<IActionResult> GetPlayerInfo([FromQuery] GetPlayerInfoRequestDto getPlayerInfoRequestDto)
