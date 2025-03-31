@@ -21,4 +21,12 @@ public class CustomCommandRepository(GameDbContext context)
         }
         return await query.ToListAsync();
     }
+
+    public async Task<bool> DeleteAllByPlayerId(int playerId)
+    {
+        List<CustomCommand> commandsToDelete = await Context.Set<CustomCommand>().Where(customCommand => customCommand.PlayerId == playerId).ToListAsync();
+        Context.Set<CustomCommand>().RemoveRange(commandsToDelete);
+        await Context.SaveChangesAsync();
+        return true;
+    }
 }

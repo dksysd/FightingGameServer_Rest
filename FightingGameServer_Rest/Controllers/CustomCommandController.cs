@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Security.Claims;
 using FightingGameServer_Rest.Domains.CustomCommand.Dtos;
 using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,16 +14,15 @@ public class CustomCommandController(
     ILogger<CustomCommandController> logger) : ControllerBase
 {
     [Authorize]
-    // [Authorize(Policy = "HasPlayer")]
     [HttpGet("all")]
     public async Task<IActionResult> GetCustomCommands()
     {
         try
         {
-            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
+            string? playerIdStr = HttpContext.User.FindFirst("playerId")?.Value;
+            int playerId = int.Parse(playerIdStr ?? throw new InvalidOperationException("Invalid player id"));
 
-            IEnumerable<CustomCommandDto> customCommands = await customCommandManageService.GetCustomCommands(userId);
+            IEnumerable<CustomCommandDto> customCommands = await customCommandManageService.GetCustomCommands(playerId);
             return Ok(customCommands);
         }
         catch (InvalidOperationException operationException)
@@ -37,17 +35,16 @@ public class CustomCommandController(
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Internal Server Error" });
         }
     }
-    
+
     [Authorize]
-    [HttpPatch("set")]
-    public async Task<IActionResult> SetCustomCommands(
-        [FromBody] IEnumerable<UpdateCustomCommandRequestDto> updateCustomCommandRequestDtos)
+    [HttpPost("set")]
+    public async Task<IActionResult> SetCustomCommands([FromBody] IEnumerable<CustomCommandDto> customCommandDtos)
     {
         try
         {
-            string? userIdStr = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = int.Parse(userIdStr ?? throw new InvalidOperationException("Invalid user id"));
-            bool isSuccess = await customCommandManageService.SetCustomCommands(updateCustomCommandRequestDtos, userId);
+            string? playerIdStr = HttpContext.User.FindFirst("playerId")?.Value;
+            int playerId = int.Parse(playerIdStr ?? throw new InvalidOperationException("Invalid player id"));
+            bool isSuccess = await customCommandManageService.SetCustomCommands(customCommandDtos, playerId);
             return isSuccess ? Ok() : Conflict(new { message = "Fail to set custom commands" });
         }
         catch (InvalidOperationException operationException)

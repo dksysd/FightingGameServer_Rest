@@ -140,7 +140,6 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     }
 
     [Authorize]
-    [Authorize(Policy = "HasPlayer")]
     [HttpPost("websocket-token")]
     public Task<IActionResult> GetWebSocketToken()
     {

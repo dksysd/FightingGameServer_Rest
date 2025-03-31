@@ -49,4 +49,9 @@ public class CustomCommandService(ICustomCommandRepository customCommandReposito
     {
         return await customCommandRepository.DeleteAsync(customCommand.Id);
     }
+
+    public Task<bool> DeleteAllCustomCommands(int playerId)
+    {
+        return customCommandRepository.DeleteAllByPlayerId(playerId);
+    }
 }

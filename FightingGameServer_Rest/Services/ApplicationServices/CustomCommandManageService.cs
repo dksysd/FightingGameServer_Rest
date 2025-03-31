@@ -13,104 +13,53 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 public class CustomCommandManageService(
     ICustomCommandService customCommandService,
     ICharacterService characterService,
-    ISkillService skillService,
-    IPlayerService playerService)
+    ISkillService skillService)
     : ICustomCommandManageService
 {
-    public async Task<IEnumerable<CustomCommandDto>> GetCustomCommands(int userId)
+    public async Task<IEnumerable<CustomCommandDto>> GetCustomCommands(int playerId)
     {
-        List<Player> players = await playerService.GetPlayerByUserId(userId);
-        Player player = players.First();
-        IEnumerable<CustomCommand> customCommands = await customCommandService.GetCustomCommandsByPlayerId(player.Id);
+        IEnumerable<CustomCommand> customCommands = await customCommandService.GetCustomCommandsByPlayerId(playerId);
         return customCommands.Select(customCommand => customCommand.ToDto());
     }
 
-    // todo patch 방식이 아닌, post 방식으로 변경 (전체 번경)
-    public async Task<bool> SetCustomCommands(
-        IEnumerable<UpdateCustomCommandRequestDto> requests,
-        int userId)
+    public async Task<bool> SetCustomCommands(IEnumerable<CustomCommandDto> requests, int playerId)
     {
-        List<Player> players = await playerService.GetPlayerByUserId(userId);
-        Player player = players.First();
-
-        IEnumerable<UpdateCustomCommandRequest> validatedRequests =
-            await ValidateCustomCommandsDtos(requests, player.Id);
-
-        List<CustomCommand> customCommands =
-            (List<CustomCommand>)await customCommandService.GetCustomCommandsByPlayerId(player.Id);
-
-        foreach (UpdateCustomCommandRequest validatedRequest in validatedRequests)
-        {
-            CustomCommand? existCustomCommand = customCommands.FirstOrDefault(customCommand =>
-                customCommand.Character == validatedRequest.CustomCommand.Character &&
-                customCommand.Skill == validatedRequest.CustomCommand.Skill);
-            switch (validatedRequest.Action)
-            {
-                case UpdateCustomCommandRequestDto.ActionType.Create:
-                    if (existCustomCommand is not null)
-                        throw new InvalidOperationException("Already exist custom command");
-                    await customCommandService.CreateCustomCommand(validatedRequest.CustomCommand);
-                    break;
-                case UpdateCustomCommandRequestDto.ActionType.Update:
-                    if (existCustomCommand is null) throw new InvalidOperationException("Custom command not found");
-                    validatedRequest.CustomCommand.Id = existCustomCommand.Id;
-                    await customCommandService.UpdateCustomCommand(validatedRequest.CustomCommand);
-                    break;
-                case UpdateCustomCommandRequestDto.ActionType.Delete:
-                    if (existCustomCommand is null) throw new InvalidOperationException("Custom command not found");
-                    validatedRequest.CustomCommand.Id = existCustomCommand.Id;
-                    await customCommandService.DeleteCustomCommand(validatedRequest.CustomCommand);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        $"Parameter {nameof(validatedRequest.Action)} is not supported");
-            }
-        }
-        
+        IEnumerable<CustomCommand> customCommands = await ValidateCustomCommands(requests, playerId);
+        await customCommandService.DeleteAllCustomCommands(playerId);
+        await Task.WhenAll(customCommands.Select(customCommandService.CreateCustomCommand));
         return true;
     }
 
-    private async Task<IEnumerable<UpdateCustomCommandRequest>> ValidateCustomCommandsDtos(
-        IEnumerable<UpdateCustomCommandRequestDto> updateCustomCommandRequestDtos, int playerId)
+    private async Task<IEnumerable<CustomCommand>> ValidateCustomCommands(
+        IEnumerable<CustomCommandDto> customCommandDtos, int playerId)
     {
-        List<Character> characters = (List<Character>)await characterService.GetAllCharacters();
-        List<Skill> skills = (List<Skill>)await skillService.GetAllSkills();
+        IEnumerable<Character> characters = await characterService.GetAllCharacters();
+        IEnumerable<Skill> skills = await skillService.GetAllSkills();
 
-        return updateCustomCommandRequestDtos.Select(updateCustomCommandRequestDto =>
+        return customCommandDtos.Select(customCommandDto =>
         {
-            CustomCommandDto customCommandDto = updateCustomCommandRequestDto.CustomCommand;
             Character? character =
                 characters.FirstOrDefault(character => character.Name == customCommandDto.CharacterName);
-            if (character is null)
+            if (character == null)
             {
                 throw new InvalidOperationException($"Character {customCommandDto.CharacterName} does not exist");
             }
 
             Skill? skill = skills.FirstOrDefault(skill => skill.Name == customCommandDto.SkillName);
-            if (skill is null)
+            if (skill == null)
             {
                 throw new InvalidOperationException($"Skill {customCommandDto.SkillName} does not exist");
             }
 
-            return new UpdateCustomCommandRequest
+            return new CustomCommand
             {
-                Action = updateCustomCommandRequestDto.Action,
-                CustomCommand = new CustomCommand
-                {
-                    Command = customCommandDto.Command,
-                    Character = character,
-                    Skill = skill,
-                    PlayerId = playerId,
-                    CharacterId = character.Id,
-                    SkillId = skill.Id
-                }
+                Command = customCommandDto.Command,
+                PlayerId = playerId,
+                CharacterId = character.Id,
+                SkillId = skill.Id,
+                Character = character,
+                Skill = skill
             };
         });
-    }
-
-    private class UpdateCustomCommandRequest
-    {
-        public required UpdateCustomCommandRequestDto.ActionType Action { get; init; }
-        public required CustomCommand CustomCommand { get; init; }
     }
 }

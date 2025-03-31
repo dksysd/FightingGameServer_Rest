@@ -9,4 +9,5 @@ public interface ICustomCommandService
     Task<IEnumerable<CustomCommand>> GetCustomCommandsByPlayerId(int playerId);
     Task<CustomCommand> UpdateCustomCommand(CustomCommand customCommand);
     Task<CustomCommand> DeleteCustomCommand(CustomCommand customCommand);
+    Task<bool> DeleteAllCustomCommands(int playerId);
 }

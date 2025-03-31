@@ -6,5 +6,5 @@ public interface ICustomCommandManageService
 {
     Task<IEnumerable<CustomCommandDto>> GetCustomCommands(int userId);
 
-    Task<bool> SetCustomCommands(IEnumerable<UpdateCustomCommandRequestDto> requests, int userId);
+    Task<bool> SetCustomCommands(IEnumerable<CustomCommandDto> requests, int userId);
 }
