@@ -26,7 +26,11 @@ public class CustomCommandManageService(
     {
         IEnumerable<CustomCommand> customCommands = await ValidateCustomCommands(requests, playerId);
         await customCommandService.DeleteAllCustomCommands(playerId);
-        await Task.WhenAll(customCommands.Select(customCommandService.CreateCustomCommand));
+        // await Task.WhenAll(customCommands.Select(customCommandService.CreateCustomCommand));
+        foreach (CustomCommand customCommand in customCommands)
+        {
+            await customCommandService.CreateCustomCommand(customCommand);
+        }
         return true;
     }
 
