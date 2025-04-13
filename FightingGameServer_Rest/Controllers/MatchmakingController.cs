@@ -56,14 +56,14 @@ public class MatchmakingController(
             }
 
             JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
-            string userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            string playerId = jwtToken.Claims.First(x => x.Type == "playerId").Value;
-            if (userId.IsNullOrEmpty())
+            // string userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            string playerId = jwtToken.Claims.First(x => x.Type == "nameid").Value;
+            /*if (userId.IsNullOrEmpty())
             {
                 logger.LogWarning("User id is missing");
                 HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
-            }
+            }*/
 
             if (playerId.IsNullOrEmpty())
             {

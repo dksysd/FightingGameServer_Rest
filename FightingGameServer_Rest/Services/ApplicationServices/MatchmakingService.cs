@@ -72,6 +72,10 @@ public class MatchmakingService(
                 $"Match:{match.Value.playerId1},{match.Value.ping},{matchId}");
             await Task.WhenAll(task1, task2);
         }
+        else
+        {
+            await SendMessageAsync(playerId, "Waiting for match");
+        }
     }
 
     public async Task ProcessMatchResultAsync(string playerId, MatchResultDto matchResultDto)
