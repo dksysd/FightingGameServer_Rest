@@ -6,7 +6,7 @@ namespace FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 
 public interface IMatchmakingService
 {
-    Task AddPlayerAsync(string playerId, WebSocket webSocket);
+    Task AddPlayerAsync(string playerId, string steamId, WebSocket webSocket);
     Task RemovePlayerAsync(string playerId);
     Task ProcessPingResultAsync(string playerId, Dictionary<string, int> pingResults);
     Task ProcessMatchResultAsync(string playerId, MatchResultDto matchResultDto);

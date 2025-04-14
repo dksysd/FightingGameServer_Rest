@@ -56,18 +56,18 @@ public class MatchmakingController(
             }
 
             JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
-            // string userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
             string playerId = jwtToken.Claims.First(x => x.Type == "nameid").Value;
-            /*if (userId.IsNullOrEmpty())
-            {
-                logger.LogWarning("User id is missing");
-                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
-            }*/
-
             if (playerId.IsNullOrEmpty())
             {
                 logger.LogWarning("Player id is missing");
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
+
+            StringValues steamId = HttpContext.Request.Query["steam_id"];
+            if (steamId.IsNullOrEmpty())
+            {
+                logger.LogWarning("Steam id is missing");
                 HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
@@ -76,12 +76,13 @@ public class MatchmakingController(
 
             try
             {
-                await HandleWebSocket(playerId, webSocket);
+                await HandleWebSocket(playerId, steamId.ToString(), webSocket);
             }
             catch (InvalidOperationException operationException)
             {
                 logger.LogWarning(operationException.Message);
-                HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                if (webSocket.State == WebSocketState.Open) HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                else await matchmakingService.RemovePlayerAsync(playerId);
             }
         }
         catch (Exception ex)
@@ -91,9 +92,9 @@ public class MatchmakingController(
         }
     }
 
-    private async Task HandleWebSocket(string playerId, WebSocket webSocket)
+    private async Task HandleWebSocket(string playerId, string steamId, WebSocket webSocket)
     {
-        await matchmakingService.AddPlayerAsync(playerId, webSocket);
+        await matchmakingService.AddPlayerAsync(playerId, steamId, webSocket);
 
         byte[] buffer = new byte[1024 * 4];
         while (webSocket.State == WebSocketState.Open)

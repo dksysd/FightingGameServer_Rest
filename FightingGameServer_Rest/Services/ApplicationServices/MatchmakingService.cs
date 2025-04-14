@@ -19,18 +19,19 @@ public class MatchmakingService(
     ICharacterService characterService) : IMatchmakingService
 {
     private readonly PlayerGraph _graph = new();
-    
+
     private readonly Dictionary<string, WebSocket> _connections = new();
 
     private readonly Dictionary<string, MatchResult> _matchResults = new();
 
-    public async Task AddPlayerAsync(string playerId, WebSocket webSocket)
+    public async Task AddPlayerAsync(string playerId, string steamId, WebSocket webSocket)
     {
         _connections[playerId] = webSocket;
-        _graph.AddPlayer(playerId);
+        _graph.AddPlayer(playerId, steamId);
 
-        List<string> waitingUsers = _graph.GetWaitingPlayers().Where(u => u != playerId).ToList();
-        await SendMessageAsync(playerId, $"PingTest:{JsonSerializer.Serialize(waitingUsers)}");
+        List<KeyValuePair<string, string>> waitingUsers =
+            _graph.GetWaitingPlayers().Where(u => u.Key != playerId).ToList();
+        await SendMessageAsync(playerId, $"PingTest:{JsonSerializer.Serialize(_graph.GetWaitingPlayers())}");
     }
 
     public async Task RemovePlayerAsync(string playerId)
@@ -55,21 +56,21 @@ public class MatchmakingService(
             _graph.UpdatePing(playerId, targetPlayerId, ping);
         }
 
-        (string playerId1, string playerId2, int ping)? match = _graph.FindBestMatch();
-        if (match.HasValue)
+        Match? match = _graph.FindBestMatch();
+        if (match is not null)
         {
             string matchId = Guid.NewGuid().ToString();
             _matchResults[matchId] = new MatchResult
             {
                 MatchId = matchId,
-                Player1Id = match.Value.playerId1,
-                Player2Id = match.Value.playerId2,
+                Player1Id = match.PlayerId1,
+                Player2Id = match.PlayerId2,
                 StartedAt = DateTime.UtcNow
             };
-            Task task1 = SendMessageAsync(match.Value.playerId1,
-                $"Match:{match.Value.playerId2},{match.Value.ping},{matchId}");
-            Task task2 = SendMessageAsync(match.Value.playerId2,
-                $"Match:{match.Value.playerId1},{match.Value.ping},{matchId}");
+            Task task1 = SendMessageAsync(match.PlayerId1,
+                $"Match:{match.PlayerSteamId2},{match.Ping},{matchId}");
+            Task task2 = SendMessageAsync(match.PlayerId2,
+                $"Match:{match.PlayerSteamId1},{match.Ping},{matchId}");
             await Task.WhenAll(task1, task2);
         }
         else
