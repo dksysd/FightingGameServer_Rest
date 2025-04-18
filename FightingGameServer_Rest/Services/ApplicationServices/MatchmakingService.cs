@@ -13,10 +13,7 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
-public class MatchmakingService(
-    IMatchRecordService matchRecordService,
-    IPlayerService playerService,
-    ICharacterService characterService) : IMatchmakingService
+public class MatchmakingService(IServiceProvider serviceProvider) : IMatchmakingService
 {
     private readonly PlayerGraph _graph = new();
 
@@ -111,27 +108,35 @@ public class MatchmakingService(
                 return;
             }
 
-            Task<Player> winnerPlayerTask = playerService.GetPlayerByName(matchResultDto.WinnerPlayerName);
-            Task<Player> loserPlayerTask = playerService.GetPlayerByName(matchResultDto.LoserPlayerName);
-            IEnumerable<Character> characters = await characterService.GetAllCharacters();
-            List<Character> enumerable = characters.ToList();
-            Character winnerCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.WinnerCharacterName) ??
-                                        throw new InvalidOperationException(
-                                            $"Can't find character {matchResultDto.WinnerCharacterName}");
-            Character loserCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.LoserCharacterName) ??
-                                       throw new InvalidOperationException(
-                                           $"Can't find character {matchResultDto.LoserCharacterName}");
-            await Task.WhenAll(winnerPlayerTask, loserPlayerTask);
-
-            await matchRecordService.CreateMatchRecord(new MatchRecord
+            using (IServiceScope scope = serviceProvider.CreateScope())
             {
-                StartedAt = matchResult.StartedAt,
-                EndedAt = DateTime.UtcNow,
-                WinnerPlayerId = winnerPlayerTask.Result.Id,
-                WinnerPlayerCharacterId = winnerCharacter.Id,
-                LoserPlayerId = loserPlayerTask.Result.Id,
-                LoserPlayerCharacterId = loserCharacter.Id
-            });
+                IMatchRecordService matchRecordService = scope.ServiceProvider.GetRequiredService<IMatchRecordService>();
+                IPlayerService playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
+                ICharacterService characterService = scope.ServiceProvider.GetRequiredService<ICharacterService>();
+                
+                Task<Player> winnerPlayerTask = playerService.GetPlayerByName(matchResultDto.WinnerPlayerName);
+                Task<Player> loserPlayerTask = playerService.GetPlayerByName(matchResultDto.LoserPlayerName);
+                IEnumerable<Character> characters = await characterService.GetAllCharacters();
+                List<Character> enumerable = characters.ToList();
+                Character winnerCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.WinnerCharacterName) ??
+                                            throw new InvalidOperationException(
+                                                $"Can't find character {matchResultDto.WinnerCharacterName}");
+                Character loserCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.LoserCharacterName) ??
+                                           throw new InvalidOperationException(
+                                               $"Can't find character {matchResultDto.LoserCharacterName}");
+                await Task.WhenAll(winnerPlayerTask, loserPlayerTask);
+
+                await matchRecordService.CreateMatchRecord(new MatchRecord
+                {
+                    StartedAt = matchResult.StartedAt,
+                    EndedAt = DateTime.UtcNow,
+                    WinnerPlayerId = winnerPlayerTask.Result.Id,
+                    WinnerPlayerCharacterId = winnerCharacter.Id,
+                    LoserPlayerId = loserPlayerTask.Result.Id,
+                    LoserPlayerCharacterId = loserCharacter.Id
+                });
+            }
+            
 
             await Task.WhenAll(
                 SendMessageAsync(matchResult.Player1Id, "Result: Confirmed"),

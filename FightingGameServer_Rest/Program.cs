@@ -50,9 +50,10 @@ namespace FightingGameServer_Rest
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICharacterInfoService, CharacterInfoService>();
             builder.Services.AddScoped<ICustomCommandManageService, CustomCommandManageService>();
-            builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
             builder.Services.AddScoped<IMatchRecordInfoService, MatchRecordInfoService>();
             builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
+            
+            builder.Services.AddSingleton<IMatchmakingService, MatchmakingService>();
         }
 
         public static void ConfigurationDataServices(this WebApplicationBuilder builder)
