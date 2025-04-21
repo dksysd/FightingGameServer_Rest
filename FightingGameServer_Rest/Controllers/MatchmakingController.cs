@@ -26,6 +26,7 @@ public class MatchmakingController(
     [HttpGet]
     public async Task Get()
     {
+        WebSocket? webSocket = null;
         try
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
@@ -72,7 +73,7 @@ public class MatchmakingController(
                 return;
             }
 
-            WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
             try
             {
@@ -81,14 +82,34 @@ public class MatchmakingController(
             catch (InvalidOperationException operationException)
             {
                 logger.LogWarning(operationException.Message);
-                if (webSocket.State == WebSocketState.Open) HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                if (webSocket.State == WebSocketState.Open)
+                    HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
                 else await matchmakingService.RemovePlayerAsync(playerId);
             }
         }
         catch (Exception ex)
         {
             logger.LogError(ex.Message);
-            HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            // HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            if (HttpContext.Response.HasStarted)
+            {
+                if (webSocket is { State: WebSocketState.Open })
+                {
+                    try
+                    {
+                        await webSocket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Internal server error",
+                            CancellationToken.None);
+                    }
+                    catch (Exception closeException)
+                    {
+                        logger.LogError(closeException.Message);
+                    }
+                }
+                else
+                {
+                    HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                }
+            }
         }
     }
 
