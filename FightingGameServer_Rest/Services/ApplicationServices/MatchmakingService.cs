@@ -28,7 +28,7 @@ public class MatchmakingService(IServiceProvider serviceProvider) : IMatchmaking
 
         List<KeyValuePair<string, string>> waitingUsers =
             _graph.GetWaitingPlayers().Where(u => u.Key != playerId).ToList();
-        await SendMessageAsync(playerId, $"PingTest:{JsonSerializer.Serialize(_graph.GetWaitingPlayers())}");
+        await SendMessageAsync(playerId, $"PingTest:{JsonSerializer.Serialize(waitingUsers)}");
     }
 
     public async Task RemovePlayerAsync(string playerId)

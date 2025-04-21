@@ -34,10 +34,11 @@ public class PlayerGraph
 
         if (bestMatch == null) return null;
 
+        Match match = new(bestMatch.Player1, _playersSteamIds[bestMatch.Player1], bestMatch.Player2,
+            _playersSteamIds[bestMatch.Player2], bestMatch.Ping);
         _playersSteamIds.Remove(bestMatch.Player1);
         _playersSteamIds.Remove(bestMatch.Player2);
-        return new Match(bestMatch.Player1, _playersSteamIds[bestMatch.Player1], bestMatch.Player2,
-            _playersSteamIds[bestMatch.Player2], bestMatch.Ping);
+        return match;
     }
 
     public List<KeyValuePair<string, string>> GetWaitingPlayers() => _playersSteamIds.ToList();
