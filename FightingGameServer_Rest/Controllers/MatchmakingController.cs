@@ -183,28 +183,28 @@ public class MatchmakingController(
     {
         // 1. 매치메이킹 서비스에 플레이어 추가
         await matchmakingService.AddPlayerAsync(playerId, steamId, webSocket);
-    
+
         try
         {
             // 2. 클라이언트로부터 메시지 수신 및 처리
             const int bufferSize = 1024 * 4;
             byte[] buffer = new byte[bufferSize];
-            
+
             // 연결이 열려있는 동안 메시지 처리
             while (webSocket.State == WebSocketState.Open)
             {
                 WebSocketReceiveResult result = await webSocket.ReceiveAsync(
-                    new ArraySegment<byte>(buffer), 
+                    new ArraySegment<byte>(buffer),
                     CancellationToken.None
                 );
-                
+
                 // 종료 프레임 처리
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     logger.LogInformation($"클라이언트 연결 종료 요청: {playerId}");
                     break;
                 }
-    
+
                 // 텍스트 메시지 처리
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
@@ -212,6 +212,10 @@ public class MatchmakingController(
                     await ProcessWebSocketMessage(playerId, message);
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
         }
         finally
         {
