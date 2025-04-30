@@ -13,7 +13,8 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
-public class MatchmakingService(IServiceScopeFactory serviceScopeFactory) : IMatchmakingService
+public class MatchmakingService(IServiceScopeFactory serviceScopeFactory, ILogger<MatchmakingService> logger)
+    : IMatchmakingService
 {
     private readonly PlayerGraph _graph = new();
 
@@ -69,6 +70,10 @@ public class MatchmakingService(IServiceScopeFactory serviceScopeFactory) : IMat
             Task task2 = SendMessageAsync(match.PlayerId2,
                 $"Match:{match.PlayerSteamId1},{match.Ping},{matchId}");
             await Task.WhenAll(task1, task2);
+            
+            logger.LogInformation(
+                "Match {MatchId} is confirmed with player {PlayerId1} and player {PlayerId2}.",
+                matchId, match.PlayerId1, match.PlayerId2);
         }
         else
         {
@@ -110,20 +115,23 @@ public class MatchmakingService(IServiceScopeFactory serviceScopeFactory) : IMat
 
             using (IServiceScope scope = serviceScopeFactory.CreateScope())
             {
-                IMatchRecordService matchRecordService = scope.ServiceProvider.GetRequiredService<IMatchRecordService>();
+                IMatchRecordService matchRecordService =
+                    scope.ServiceProvider.GetRequiredService<IMatchRecordService>();
                 IPlayerService playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
                 ICharacterService characterService = scope.ServiceProvider.GetRequiredService<ICharacterService>();
-                
+
                 Task<Player> winnerPlayerTask = playerService.GetPlayerByName(matchResultDto.WinnerPlayerName);
                 Task<Player> loserPlayerTask = playerService.GetPlayerByName(matchResultDto.LoserPlayerName);
                 IEnumerable<Character> characters = await characterService.GetAllCharacters();
                 List<Character> enumerable = characters.ToList();
-                Character winnerCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.WinnerCharacterName) ??
-                                            throw new InvalidOperationException(
-                                                $"Can't find character {matchResultDto.WinnerCharacterName}");
-                Character loserCharacter = enumerable.FirstOrDefault(c => c.Name == matchResultDto.LoserCharacterName) ??
-                                           throw new InvalidOperationException(
-                                               $"Can't find character {matchResultDto.LoserCharacterName}");
+                Character winnerCharacter =
+                    enumerable.FirstOrDefault(c => c.Name == matchResultDto.WinnerCharacterName) ??
+                    throw new InvalidOperationException(
+                        $"Can't find character {matchResultDto.WinnerCharacterName}");
+                Character loserCharacter =
+                    enumerable.FirstOrDefault(c => c.Name == matchResultDto.LoserCharacterName) ??
+                    throw new InvalidOperationException(
+                        $"Can't find character {matchResultDto.LoserCharacterName}");
                 await Task.WhenAll(winnerPlayerTask, loserPlayerTask);
 
                 await matchRecordService.CreateMatchRecord(new MatchRecord
@@ -136,7 +144,7 @@ public class MatchmakingService(IServiceScopeFactory serviceScopeFactory) : IMat
                     LoserPlayerCharacterId = loserCharacter.Id
                 });
             }
-            
+
 
             await Task.WhenAll(
                 SendMessageAsync(matchResult.Player1Id, "Result: Confirmed"),

@@ -47,6 +47,7 @@ public class MatchmakingController(
         
             // 3. WebSocket 연결 수락
             webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            logger.LogInformation("Web socket request from {PlayerId} accepted.", playerId);
         
             // 4. WebSocket 처리
             await HandleWebSocket(playerId, steamId, webSocket);
@@ -54,7 +55,7 @@ public class MatchmakingController(
         }
         catch (InvalidOperationException operationException)
         {
-            logger.LogWarning(operationException, "매치메이킹 작업 오류");
+            logger.LogError(operationException, "매치메이킹 작업 오류");
         
             if (webSocket is { State: WebSocketState.Open })
             {
@@ -70,7 +71,7 @@ public class MatchmakingController(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "매치메이킹 오류");
+            logger.LogError(ex.Message);
         
             // WebSocket이 열려있다면 안전하게 닫음
             if (webSocket is { State: WebSocketState.Open })
@@ -91,7 +92,7 @@ public class MatchmakingController(
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "플레이어 제거 중 오류 발생");
+                    logger.LogError(ex.Message);
                 }
             }
         }
