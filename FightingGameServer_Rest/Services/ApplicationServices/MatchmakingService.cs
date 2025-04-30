@@ -13,7 +13,7 @@ namespace FightingGameServer_Rest.Services.ApplicationServices;
 [SuppressMessage("ReSharper", "HeapView.DelegateAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
 [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]
-public class MatchmakingService(IServiceProvider serviceProvider) : IMatchmakingService
+public class MatchmakingService(IServiceScopeFactory serviceScopeFactory) : IMatchmakingService
 {
     private readonly PlayerGraph _graph = new();
 
@@ -108,7 +108,7 @@ public class MatchmakingService(IServiceProvider serviceProvider) : IMatchmaking
                 return;
             }
 
-            using (IServiceScope scope = serviceProvider.CreateScope())
+            using (IServiceScope scope = serviceScopeFactory.CreateScope())
             {
                 IMatchRecordService matchRecordService = scope.ServiceProvider.GetRequiredService<IMatchRecordService>();
                 IPlayerService playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();

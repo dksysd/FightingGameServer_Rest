@@ -52,7 +52,7 @@ namespace FightingGameServer_Rest
             builder.Services.AddScoped<ICustomCommandManageService, CustomCommandManageService>();
             builder.Services.AddScoped<IMatchRecordInfoService, MatchRecordInfoService>();
             builder.Services.AddScoped<IPlayerInfoService, PlayerInfoService>();
-            
+
             builder.Services.AddSingleton<IMatchmakingService, MatchmakingService>();
         }
 
@@ -81,11 +81,18 @@ namespace FightingGameServer_Rest
         public static void ConfigureDbContext(this WebApplicationBuilder builder, IConfiguration configuration)
         {
             string? connectionString = configuration.GetConnectionString("DevConnection");
-            builder.Services.AddDbContext<GameDbContext>(options =>
+            builder.Services.AddDbContextFactory<GameDbContext>(options =>
             {
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString ??
                                                                             throw new InvalidOperationException(
-                                                                                "Connection string is missing")));
+                                                                                "Connection string is missing")),
+                    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 10,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null)
+                        .CommandTimeout(30)
+                        .MaxBatchSize(100)
+                        .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 
                 // 개발 환경 설정 
                 // ReSharper disable once InvertIf
@@ -113,7 +120,9 @@ namespace FightingGameServer_Rest
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("Admin", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.Admin)))
                 .AddPolicy("User", policy => policy.Requirements.Add(new MinimumRoleRequirement(User.RoleType.User)))
-                .AddPolicy("HasPlayer", policy => policy.RequireAssertion(context => context.User.HasClaim(claim => claim.Type == "playerId" && !string.IsNullOrEmpty(claim.Value))))
+                .AddPolicy("HasPlayer",
+                    policy => policy.RequireAssertion(context =>
+                        context.User.HasClaim(claim => claim.Type == "playerId" && !string.IsNullOrEmpty(claim.Value))))
                 .SetDefaultPolicy(new AuthorizationPolicyBuilder("JwtToken").RequireAuthenticatedUser().Build());
             builder.Services.AddSingleton<IAuthorizationHandler, MinimumRoleHandler>();
             builder.Services.AddSingleton<JwtTokenExtractor>();
