@@ -37,6 +37,10 @@ namespace FightingGameServer_Rest.Migrations
                         .HasDefaultValue(0f)
                         .HasColumnName("attack_speed");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Dexterity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")

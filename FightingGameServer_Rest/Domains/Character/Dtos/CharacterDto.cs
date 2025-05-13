@@ -7,6 +7,7 @@ namespace FightingGameServer_Rest.Domains.Character.Dtos;
 public class CharacterDto
 {
     public required string Name { get; set; }
+    public required string Description { get; set; }
     public required int Health { get; set; }
     public required int Strength { get; set; }
     public required int Dexterity { get; set; }

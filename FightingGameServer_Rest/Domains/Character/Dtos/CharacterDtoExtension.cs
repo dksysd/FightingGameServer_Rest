@@ -12,6 +12,7 @@ public static class CharacterDtoExtension
         return new CharacterDto
         {
             Name = character.Name,
+            Description = character.Description,
             Health = character.Health,
             Strength = character.Strength,
             Dexterity = character.Dexterity,
