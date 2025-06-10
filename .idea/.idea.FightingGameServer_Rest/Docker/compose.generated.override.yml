@@ -1,0 +1,20 @@
+# 생성된 파일입니다. 수동 편집용이 아닙니다.
+services:
+  fighting-game-server:
+    build:
+      context: "C:\\Users\\dksys\\RiderProjects\\FightingGameServer_Rest\\FightingGameServer_Rest"
+      dockerfile: "Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/FightingGameServer_Rest.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "fightinggameserver_rest:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\dksys\\RiderProjects\\FightingGameServer_Rest\\FightingGameServer_Rest:/app:rw"
+    - "C:\\Users\\dksys\\RiderProjects\\FightingGameServer_Rest:/src:rw"
+    - "C:\\Users\\dksys\\.nuget\\packages:/root/.nuget/packages"
+    working_dir: "/app"

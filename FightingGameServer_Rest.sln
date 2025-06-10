@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FightingGameServer_Rest", "FightingGameServer_Rest\FightingGameServer_Rest.csproj", "{AFCD2AC8-7BFC-4C28-AFAD-3646A192EF52}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder1", "SolutionFolder1", "{FFF9002C-04F1-4943-B7D7-05838E5C5DA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
