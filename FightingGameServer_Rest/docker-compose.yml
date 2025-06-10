@@ -12,6 +12,4 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - DOTNET_RUNNING_IN_CONTAINER=true
-      # 외부 데이터베이스 연결 문자열 설정 (실제 서버 정보로 변경 필요)
-      - ConnectionStrings__DefaultConnection=server=외부DB서버주소;port=3306;database=fight_game;user=fight_game_user;password=your_secure_password
     restart: always

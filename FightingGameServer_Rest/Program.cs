@@ -10,6 +10,7 @@ using FightingGameServer_Rest.Services.ApplicationServices.Interfaces;
 using FightingGameServer_Rest.Services.DataServices;
 using FightingGameServer_Rest.Services.DataServices.Interfaces;
 using FightingGameServer_Rest.Swagger;
+using FightingGameServer.Grpc.Generated;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +29,8 @@ builder.ConfigureDbContext(builder.Configuration); // Configuration 객체를 �
 builder.ConfigureAuthentication();
 builder.ConfigureAuthorization();
 builder.ConfigureSwagger();
-builder.ConfigureControllersAndCache(); // 컨트롤러 및 캐시 설정 추가 
-
+builder.ConfigureControllersAndCache(); // 컨트롤러 및 캐시 설정 추가
+builder.ConfigureChatbotServices();
 
 WebApplication app = builder.Build();
 
@@ -167,6 +168,36 @@ namespace FightingGameServer_Rest
         {
             builder.Services.AddControllers();
             builder.Services.AddMemoryCache();
+        }
+
+        // Chatbot Service 설정
+        public static void ConfigureChatbotServices(this WebApplicationBuilder builder)
+        {
+            // gRPC 클라이언트 설정
+            string? grpcAddress = builder.Configuration.GetValue<string>("ChatbotGrpc:Address") ??
+                                  "http://localhost:50051";
+
+            builder.Services.AddGrpcClient<CharacterChatService.CharacterChatServiceClient>(options =>
+                {
+                    options.Address = new Uri(grpcAddress);
+                })
+                .ConfigureChannel(options =>
+                {
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.HttpHandler = new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                        };
+                    }
+
+                    // 타임아웃 설정
+                    options.MaxReceiveMessageSize = 4 * 1024 * 1024;
+                    options.MaxSendMessageSize = 4 * 1024 * 1024;
+                });
+
+            builder.Services.AddScoped<IChatbotGrpcService, ChatbotGrpcService>();
+            builder.Services.AddSingleton<IChatbotWebSocketService, ChatbotWebSocketService>();
         }
     }
 

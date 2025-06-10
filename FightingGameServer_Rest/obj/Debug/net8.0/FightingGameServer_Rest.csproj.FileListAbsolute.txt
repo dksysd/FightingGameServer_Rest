@@ -143,3 +143,10 @@ C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Google.Protobuf.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.AspNetCore.Server.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.AspNetCore.Server.ClientFactory.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.Core.Api.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.Net.Client.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.Net.ClientFactory.dll
+C:\Users\dksys\RiderProjects\FightingGameServer_Rest\FightingGameServer_Rest\bin\Debug\net8.0\Grpc.Net.Common.dll
