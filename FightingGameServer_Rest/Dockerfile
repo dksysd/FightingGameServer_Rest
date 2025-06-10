@@ -15,7 +15,7 @@ WORKDIR /src
 
 # 프로젝트 파일들을 먼저 복사하여 캐시 최적화
 COPY ["FightingGameServer_Rest/FightingGameServer_Rest.csproj", "FightingGameServer_Rest/"]
-COPY ["global.json", "./"]
+#COPY ["global.json", "./"]
 RUN dotnet restore "FightingGameServer_Rest/FightingGameServer_Rest.csproj" --verbosity minimal
 
 # 소스 코드 복사 및 빌드
