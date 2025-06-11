@@ -103,8 +103,19 @@ namespace FightingGameServer_Rest
                     options.EnableSensitiveDataLogging();
                     options.UseLoggerFactory(LoggerFactory.Create(loggingBuilder => loggingBuilder.AddConsole()));
                 }
-
-                // **운영 환경 설정 주의 사항** 주석은 그대로 유지 
+                else // 프로덕션 환경 설정
+                {
+                    // 에러와 경고만 로깅 (INFO 레벨 제외)
+                    options.LogTo(message =>
+                    {
+                        if (message.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+                            message.Contains("warning", StringComparison.OrdinalIgnoreCase) ||
+                            message.Contains("retry", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine($"[DB] {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} {message}");
+                        }
+                    }, LogLevel.Warning);
+                }
             });
         }
 

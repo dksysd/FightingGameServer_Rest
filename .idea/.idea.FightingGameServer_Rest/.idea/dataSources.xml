@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@dksysd-home-server.duckdns.org" uuid="8dfd5b92-b656-4aa9-91e0-59870c9bbf49">
+    <data-source source="LOCAL" name="fight_game@dksysd-home-server.duckdns.org" uuid="8dfd5b92-b656-4aa9-91e0-59870c9bbf49">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://dksysd-home-server.duckdns.org:3306</jdbc-url>
+      <jdbc-url>jdbc:mysql://dksysd-home-server.duckdns.org:3306/fight_game</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
