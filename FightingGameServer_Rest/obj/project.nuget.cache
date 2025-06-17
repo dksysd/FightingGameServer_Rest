@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8RzgkWkIg0c=",
+  "dgSpecHash": "T9/+n/KCVZA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dksys\\RiderProjects\\FightingGameServer_Rest\\FightingGameServer_Rest\\FightingGameServer_Rest.csproj",
+  "projectFilePath": "C:\\Users\\dksys\\OneDrive\\바탕 화면\\FightGameServer\\services\\FightGameServer_Rest\\FightingGameServer_Rest\\FightingGameServer_Rest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dksys\\.nuget\\packages\\google.protobuf\\3.31.1\\google.protobuf.3.31.1.nupkg.sha512",
     "C:\\Users\\dksys\\.nuget\\packages\\grpc.aspnetcore\\2.71.0\\grpc.aspnetcore.2.71.0.nupkg.sha512",
